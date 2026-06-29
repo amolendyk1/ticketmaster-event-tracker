@@ -5,6 +5,11 @@ Core features: (3-5 things it will do)
 What I don't know yet: (what about fetch/async/JSON is new to you?)
 
 
+https://developer.ticketmaster.com/products-and-docs/apis/getting-started/
+
+
+
+
 What the app does (the short answer)
 It fetches live events from Ticketmaster’s Discovery API, lets users search by artist, venue, city, or keyword, and displays results in a clean, responsive interface with loading + error states.
 
