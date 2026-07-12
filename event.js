@@ -3,29 +3,24 @@ const seatmapContainer = document.getElementById('seatmap-container');
 const eventDetails = document.getElementById('event-details');
 const loadingIndicator = document.getElementById('loading-indicator');
 
-// Cache for seatmap data
-const seatmapCache = new Map();
-
 // Initialize with event data
 document.addEventListener('DOMContentLoaded', async () => {
-  const eventId = getEventIdFromURL(); // Implement this based on your routing
+  const eventId = getEventIdFromURL();
   if (eventId) {
-    await loadEventAndSeatmap(eventId);
+    await loadEvent(eventId);
   }
 });
 
-async function loadEventAndSeatmap(eventId) {
+async function loadEvent(eventId) {
   showLoading(true);
-  
+
   try {
-    // Load event details and seatmap in parallel
-    const [eventData, seatmapData] = await Promise.all([
-      fetchEventDetails(eventId),
-      fetchSeatmapData(eventId)
-    ]);
-    
+    const eventData = await fetchEventDetails(eventId);
     renderEventDetails(eventData);
-    renderSeatmap(seatmapData);
+
+    // Load official Ticketmaster seat map
+    renderSeatmap(eventData.url);
+
   } catch (error) {
     console.error('Loading error:', error);
     showError('Failed to load event data');
@@ -40,21 +35,6 @@ async function fetchEventDetails(eventId) {
   return await response.json();
 }
 
-async function fetchSeatmapData(eventId) {
-  // Check cache first
-  if (seatmapCache.has(eventId)) {
-    return seatmapCache.get(eventId);
-  }
-
-  const response = await fetch(`/api/events/${eventId}/seatmap`);
-  if (!response.ok) throw new Error('Seatmap fetch failed');
-  
-  const data = await response.json();
-  // Cache the seatmap data
-  seatmapCache.set(eventId, data);
-  return data;
-}
-
 function renderEventDetails(event) {
   eventDetails.innerHTML = `
     <h2>${event.name}</h2>
@@ -63,25 +43,15 @@ function renderEventDetails(event) {
   `;
 }
 
-function renderSeatmap(seatmapData) {
-  // Implement your seatmap rendering logic here
+function renderSeatmap(ticketmasterUrl) {
   seatmapContainer.innerHTML = `
-    <div class="seatmap">
-      ${seatmapData.sections.map(section => `
-        <div class="section" data-price="${section.price}">
-          ${section.seats.map(seat => `
-            <div class="seat ${seat.available ? 'available' : 'sold'}" 
-                 data-seat="${seat.id}"></div>
-          `).join('')}
-        </div>
-      `).join('')}
-    </div>
+    <iframe 
+      src="${ticketmasterUrl}" 
+      class="seatmap-iframe"
+      style="width:100%; height:800px; border:none; opacity:0.1;"
+      onload="this.style.opacity='1'"
+    ></iframe>
   `;
-  
-  // Add interactivity
-  document.querySelectorAll('.seat.available').forEach(seat => {
-    seat.addEventListener('click', () => selectSeat(seat.dataset.seat));
-  });
 }
 
 function showLoading(show) {
@@ -93,7 +63,6 @@ function showError(message) {
   seatmapContainer.innerHTML = `<div class="error">${message}</div>`;
 }
 
-// Utility function - implement based on your routing
 function getEventIdFromURL() {
   return new URLSearchParams(window.location.search).get('eventId');
 }
