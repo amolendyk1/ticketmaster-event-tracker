@@ -19,8 +19,10 @@ async function loadEvent() {
     document.getElementById("event-location").textContent =
       `${venue.city.name}, ${venue.state?.name || ""}`;
 
+    // Buy Tickets button
     document.getElementById("ticket-link").href = event.url;
 
+    // Full-screen modal seat map
     const openBtn = document.getElementById("open-seatmap");
     const closeBtn = document.getElementById("close-seatmap");
     const modal = document.getElementById("seatmap-modal");
@@ -29,7 +31,10 @@ async function loadEvent() {
     openBtn.onclick = () => {
       modal.style.display = "flex";
       frame.style.opacity = "0.1";
-      frame.src = `https://www.ticketmaster.com/event/${eventId}`;
+
+      // FIXED: Use event.url instead of eventId
+      frame.src = event.url;
+
       frame.onload = () => {
         frame.style.opacity = "1";
       };

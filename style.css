@@ -291,3 +291,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.tm-filter-tag {
+  background: #402821;
+  color: #f1e6ad;
+  padding: 8px 14px;
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  border: 2px solid #f1e6ad;
+}

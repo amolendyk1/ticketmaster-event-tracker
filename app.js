@@ -73,6 +73,16 @@ async function fetchEvents(keyword, locationFilter) {
       return;
     }
 
+    // Show filter tag
+    const filterTag = document.getElementById("filter-tag");
+    if (locationFilter) {
+      filterTag.textContent = `Filtering by: ${locationFilter}`;
+      filterTag.style.display = "inline-block";
+    } else {
+      filterTag.style.display = "none";
+}
+
+
     statusEl.textContent = `Found ${filteredEvents.length} events`;
 
     renderEvents();
