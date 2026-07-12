@@ -4,29 +4,47 @@ const eventId = params.get("id");
 const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 async function loadEvent() {
-  const res = await fetch(`${API_URL}?id=${eventId}`);
-  const event = await res.json();
+  if (!eventId) return;
 
-  const venue = event._embedded.venues[0];
+  try {
+    const res = await fetch(`${API_URL}?id=${eventId}`);
+    const event = await res.json();
 
-  document.getElementById("event-name").textContent = event.name;
-  document.getElementById("event-date").textContent = event.dates.start.localDate;
-  document.getElementById("event-venue").textContent = venue.name;
-  document.getElementById("event-location").textContent =
-    `${venue.city.name}, ${venue.state?.name || ""}`;
+    const venue = event._embedded.venues[0];
 
-  document.getElementById("ticket-link").href = event.url;
+    document.getElementById("event-name").textContent = event.name;
+    document.getElementById("event-date").textContent =
+      event.dates.start.localDate;
+    document.getElementById("event-venue").textContent = venue.name;
+    document.getElementById("event-location").textContent =
+      `${venue.city.name}, ${venue.state?.name || ""}`;
 
-  document.getElementById("open-seatmap").onclick = () => {
-    document.getElementById("seatmap-modal").style.display = "flex";
-    document.getElementById("seatmap-frame").src =
-      `https://www.ticketmaster.com/event/${eventId}`;
-  };
+    // Buy Tickets button → official Ticketmaster checkout
+    document.getElementById("ticket-link").href = event.url;
 
-  document.getElementById("close-seatmap").onclick = () => {
-    document.getElementById("seatmap-modal").style.display = "none";
-    document.getElementById("seatmap-frame").src = "";
-  };
+    // Full-screen seat map modal
+    const openBtn = document.getElementById("open-seatmap");
+    const closeBtn = document.getElementById("close-seatmap");
+    const modal = document.getElementById("seatmap-modal");
+    const frame = document.getElementById("seatmap-frame");
+
+    openBtn.onclick = () => {
+      modal.style.display = "flex";
+      frame.style.opacity = "0.1";
+      frame.src = `https://www.ticketmaster.com/event/${eventId}`;
+      frame.onload = () => {
+        frame.style.opacity = "1";
+      };
+    };
+
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+      frame.src = "";
+    };
+  } catch (err) {
+    document.getElementById("event-name").textContent =
+      "Unable to load event details.";
+  }
 }
 
 loadEvent();

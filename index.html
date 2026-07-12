@@ -15,6 +15,8 @@
   </header>
 
   <main class="tm-main tm-main--single">
+
+    <!-- SEARCH PANEL -->
     <section class="tm-panel tm-panel--search">
       <h2>Find Events Near You</h2>
 
@@ -25,7 +27,7 @@
         </div>
 
         <div class="tm-form-row">
-          <label for="location-input">Location Filter</label>
+          <label for="location-input">Location Filter (optional)</label>
           <input id="location-input" type="text" placeholder="Boston, MA…" />
         </div>
 
@@ -35,16 +37,19 @@
       <p id="status" class="tm-status"></p>
     </section>
 
+    <!-- RESULTS PANEL -->
     <section class="tm-panel tm-panel--results">
       <h2>Events</h2>
       <div id="events-container" class="tm-events-grid"></div>
       <button id="load-more" class="tm-button" style="display:none;">Load More</button>
     </section>
 
+    <!-- MAP PANEL -->
     <section class="tm-panel tm-panel--map">
       <h2>Event Map</h2>
       <div id="map" class="tm-map"></div>
     </section>
+
   </main>
 
   <footer class="tm-footer">

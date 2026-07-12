@@ -1,6 +1,3 @@
-let allEvents = [];
-let shownCount = 0;
-
 const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 const searchForm = document.getElementById("search-form");
@@ -10,31 +7,64 @@ const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 const loadMoreBtn = document.getElementById("load-more");
 
+let allEvents = [];
+let shownCount = 0;
+
 let map;
-let userLat = null;
-let userLng = null;
 
-navigator.geolocation.getCurrentPosition((pos) => {
-  userLat = pos.coords.latitude;
-  userLng = pos.coords.longitude;
+// Initialize map after geolocation
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    const userLat = pos.coords.latitude;
+    const userLng = pos.coords.longitude;
 
-  map = L.map("map").setView([userLat, userLng], 10);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-});
+    map = L.map("map", { zoomControl: false }).setView([userLat, userLng], 10);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18
+    }).addTo(map);
+
+    L.marker([userLat, userLng])
+      .addTo(map)
+      .bindPopup("You are here");
+  },
+  () => {
+    // Fallback if user denies location
+    map = L.map("map").setView([37.7749, -122.4194], 5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18
+    }).addTo(map);
+  }
+);
 
 async function fetchEvents(keyword, location) {
-  statusEl.textContent = "Loading…";
-
-  const url = `${API_URL}?keyword=${encodeURIComponent(keyword)}&location=${encodeURIComponent(location)}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  allEvents = data._embedded?.events || [];
+  statusEl.textContent = "Loading events…";
+  eventsContainer.innerHTML = "";
+  loadMoreBtn.style.display = "none";
+  allEvents = [];
   shownCount = 0;
 
-  renderEvents();
-  renderMapPins();
+  const url = `${API_URL}?keyword=${encodeURIComponent(
+    keyword
+  )}&location=${encodeURIComponent(location)}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    allEvents = data._embedded?.events || [];
+
+    if (!allEvents.length) {
+      statusEl.textContent = "No events found.";
+      return;
+    }
+
+    statusEl.textContent = `Found ${allEvents.length} events`;
+    renderEvents();
+    renderMapPins();
+  } catch (err) {
+    statusEl.textContent = "Error fetching events.";
+  }
 }
 
 function renderEvents() {
@@ -48,21 +78,27 @@ function renderEvents() {
     card.href = `event.html?id=${event.id}`;
     card.innerHTML = `
       <h3>${event.name}</h3>
-      <p>${event.dates.start.localDate} — ${venue.city.name}, ${venue.state?.name || ""}</p>
+      <p>${event.dates.start.localDate} — ${venue.city.name}, ${
+      venue.state?.name || ""
+    }</p>
     `;
     eventsContainer.appendChild(card);
   });
 
-  loadMoreBtn.style.display = shownCount < allEvents.length ? "block" : "none";
+  loadMoreBtn.style.display = shownCount < allEvents.length ? "inline-flex" : "none";
 }
 
 function renderMapPins() {
   if (!map) return;
 
-  allEvents.slice(0, 5).forEach((event) => {
+  const firstFive = allEvents.slice(0, 5);
+
+  firstFive.forEach((event) => {
     const venue = event._embedded.venues[0];
-    const lat = venue.location.latitude;
-    const lng = venue.location.longitude;
+    const lat = Number(venue.location.latitude);
+    const lng = Number(venue.location.longitude);
+
+    if (!lat || !lng) return;
 
     L.marker([lat, lng])
       .addTo(map)
@@ -72,8 +108,11 @@ function renderMapPins() {
 
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  eventsContainer.innerHTML = "";
-  fetchEvents(searchInput.value.trim(), locationInput.value.trim());
+  const keyword = searchInput.value.trim(); // optional
+  const location = locationInput.value.trim(); // optional
+  fetchEvents(keyword, location);
 });
 
-loadMoreBtn.addEventListener("click", renderEvents);
+loadMoreBtn.addEventListener("click", () => {
+  renderEvents();
+});
