@@ -4,8 +4,8 @@ const categorySelect = document.getElementById("category");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
-// IMPORTANT: This calls your Vercel backend, NOT Ticketmaster directly
-const API_URL = "/api/ticketmaster";
+
+const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 async function fetchEvents(keyword, category) {
   statusEl.textContent = "Loading…";
@@ -23,7 +23,6 @@ async function fetchEvents(keyword, category) {
 
     const data = await res.json();
 
-    // No events found
     if (!data._embedded?.events) {
       statusEl.textContent = "No events found.";
       eventsContainer.innerHTML = "";
@@ -31,7 +30,6 @@ async function fetchEvents(keyword, category) {
       return;
     }
 
-    // Store events globally for map + details
     window.eventData = data._embedded.events;
 
     statusEl.textContent = `Found ${window.eventData.length} events`;
@@ -48,7 +46,7 @@ async function fetchEvents(keyword, category) {
       </p>
     `;
 
-    window.eventData = []; // prevent map crashes
+    window.eventData = [];
   }
 }
 
@@ -78,7 +76,6 @@ function renderEvents(events) {
     .join("");
 }
 
-// Handle search form
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
   fetchEvents(searchInput.value.trim(), categorySelect.value);
