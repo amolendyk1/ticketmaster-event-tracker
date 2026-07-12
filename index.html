@@ -2,42 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Find Events</title>
+  <title>Event Explorer</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 
 <body class="tm-body">
   <header class="tm-header">
     <div class="tm-header-inner">
       <h1 class="tm-logo">Event Explorer</h1>
-      <nav class="tm-nav">
-        <a href="index.html">Search</a>
-      </nav>
     </div>
   </header>
 
-  <main class="tm-main">
+  <main class="tm-main tm-main--single">
     <section class="tm-panel tm-panel--search">
-      <h2>Search Events</h2>
+      <h2>Find Events Near You</h2>
 
       <form id="search-form" class="tm-form">
         <div class="tm-form-row">
-          <label for="search-input">Keyword</label>
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Noah Kahan, Celtics, Broadway..."
-          />
+          <label for="search-input">Keyword (optional)</label>
+          <input id="search-input" type="text" placeholder="Noah Kahan, Broadway…" />
         </div>
 
         <div class="tm-form-row">
-          <label for="category">Category</label>
-          <select id="category">
-            <option value="">All</option>
-            <option value="Music">Music</option>
-            <option value="Sports">Sports</option>
-            <option value="Arts & Theatre">Arts & Theatre</option>
-          </select>
+          <label for="location-input">Location Filter</label>
+          <input id="location-input" type="text" placeholder="Boston, MA…" />
         </div>
 
         <button type="submit" class="tm-button">Search</button>
@@ -49,13 +38,20 @@
     <section class="tm-panel tm-panel--results">
       <h2>Events</h2>
       <div id="events-container" class="tm-events-grid"></div>
+      <button id="load-more" class="tm-button" style="display:none;">Load More</button>
+    </section>
+
+    <section class="tm-panel tm-panel--map">
+      <h2>Event Map</h2>
+      <div id="map" class="tm-map"></div>
     </section>
   </main>
 
   <footer class="tm-footer">
-    <p>Powered by Ticketmaster Discovery API</p>
+    <p>Powered by Ticketmaster</p>
   </footer>
 
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

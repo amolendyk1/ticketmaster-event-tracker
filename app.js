@@ -1,57 +1,79 @@
-const searchForm = document.getElementById("search-form");
-const searchInput = document.getElementById("search-input");
-const categorySelect = document.getElementById("category");
-const statusEl = document.getElementById("status");
-const eventsContainer = document.getElementById("events-container");
+let allEvents = [];
+let shownCount = 0;
 
 const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
-async function fetchEvents(keyword, category) {
-  statusEl.textContent = "Loading events…";
+const searchForm = document.getElementById("search-form");
+const searchInput = document.getElementById("search-input");
+const locationInput = document.getElementById("location-input");
+const statusEl = document.getElementById("status");
+const eventsContainer = document.getElementById("events-container");
+const loadMoreBtn = document.getElementById("load-more");
 
-  const url = `${API_URL}?keyword=${encodeURIComponent(
-    keyword
-  )}&category=${encodeURIComponent(category)}`;
+let map;
+let userLat = null;
+let userLng = null;
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+navigator.geolocation.getCurrentPosition((pos) => {
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
 
-    if (!data._embedded?.events) {
-      statusEl.textContent = "No events found.";
-      eventsContainer.innerHTML = "";
-      return;
-    }
+  map = L.map("map").setView([userLat, userLng], 10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+});
 
-    const events = data._embedded.events;
-    statusEl.textContent = `Found ${events.length} events`;
+async function fetchEvents(keyword, location) {
+  statusEl.textContent = "Loading…";
 
-    eventsContainer.innerHTML = events
-      .map((event) => {
-        const venue = event._embedded.venues[0];
-        return `
-          <a class="tm-event-card" href="event.html?id=${event.id}">
-            <h3>${event.name}</h3>
-            <p>${event.dates.start.localDate} — ${venue.city.name}, ${
-          venue.state?.name || ""
-        }</p>
-          </a>
-        `;
-      })
-      .join("");
-  } catch (err) {
-    statusEl.textContent = "Error fetching events.";
-    eventsContainer.innerHTML = "";
-  }
+  const url = `${API_URL}?keyword=${encodeURIComponent(keyword)}&location=${encodeURIComponent(location)}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  allEvents = data._embedded?.events || [];
+  shownCount = 0;
+
+  renderEvents();
+  renderMapPins();
+}
+
+function renderEvents() {
+  const nextEvents = allEvents.slice(shownCount, shownCount + 5);
+  shownCount += nextEvents.length;
+
+  nextEvents.forEach((event) => {
+    const venue = event._embedded.venues[0];
+    const card = document.createElement("a");
+    card.className = "tm-event-card";
+    card.href = `event.html?id=${event.id}`;
+    card.innerHTML = `
+      <h3>${event.name}</h3>
+      <p>${event.dates.start.localDate} — ${venue.city.name}, ${venue.state?.name || ""}</p>
+    `;
+    eventsContainer.appendChild(card);
+  });
+
+  loadMoreBtn.style.display = shownCount < allEvents.length ? "block" : "none";
+}
+
+function renderMapPins() {
+  if (!map) return;
+
+  allEvents.slice(0, 5).forEach((event) => {
+    const venue = event._embedded.venues[0];
+    const lat = venue.location.latitude;
+    const lng = venue.location.longitude;
+
+    L.marker([lat, lng])
+      .addTo(map)
+      .bindPopup(`<b>${event.name}</b><br>${venue.city.name}`);
+  });
 }
 
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const keyword = searchInput.value.trim();
-  const category = categorySelect.value;
-  if (!keyword) {
-    statusEl.textContent = "Please enter a keyword.";
-    return;
-  }
-  fetchEvents(keyword, category);
+  eventsContainer.innerHTML = "";
+  fetchEvents(searchInput.value.trim(), locationInput.value.trim());
 });
+
+loadMoreBtn.addEventListener("click", renderEvents);
