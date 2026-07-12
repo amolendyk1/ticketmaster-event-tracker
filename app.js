@@ -8,6 +8,7 @@ const eventsContainer = document.getElementById("events-container");
 const loadMoreBtn = document.getElementById("load-more");
 
 let allEvents = [];
+let filteredEvents = [];
 let shownCount = 0;
 
 let map;
@@ -29,7 +30,6 @@ navigator.geolocation.getCurrentPosition(
       .bindPopup("You are here");
   },
   () => {
-    // Fallback if user denies location
     map = L.map("map").setView([37.7749, -122.4194], 5);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 18
@@ -37,16 +37,15 @@ navigator.geolocation.getCurrentPosition(
   }
 );
 
-async function fetchEvents(keyword, location) {
+async function fetchEvents(keyword, locationFilter) {
   statusEl.textContent = "Loading events…";
   eventsContainer.innerHTML = "";
   loadMoreBtn.style.display = "none";
   allEvents = [];
+  filteredEvents = [];
   shownCount = 0;
 
-  const url = `${API_URL}?keyword=${encodeURIComponent(
-    keyword
-  )}&location=${encodeURIComponent(location)}`;
+  const url = `${API_URL}?keyword=${encodeURIComponent(keyword)}`;
 
   try {
     const res = await fetch(url);
@@ -54,12 +53,28 @@ async function fetchEvents(keyword, location) {
 
     allEvents = data._embedded?.events || [];
 
-    if (!allEvents.length) {
-      statusEl.textContent = "No events found.";
+    // LOCATION FILTER FIXED
+    if (locationFilter) {
+      const filter = locationFilter.toLowerCase();
+
+      filteredEvents = allEvents.filter((event) => {
+        const venue = event._embedded.venues[0];
+        const city = venue.city.name.toLowerCase();
+        const state = (venue.state?.name || "").toLowerCase();
+
+        return city.includes(filter) || state.includes(filter);
+      });
+    } else {
+      filteredEvents = allEvents;
+    }
+
+    if (!filteredEvents.length) {
+      statusEl.textContent = "No events found for this location.";
       return;
     }
 
-    statusEl.textContent = `Found ${allEvents.length} events`;
+    statusEl.textContent = `Found ${filteredEvents.length} events`;
+
     renderEvents();
     renderMapPins();
   } catch (err) {
@@ -68,7 +83,7 @@ async function fetchEvents(keyword, location) {
 }
 
 function renderEvents() {
-  const nextEvents = allEvents.slice(shownCount, shownCount + 5);
+  const nextEvents = filteredEvents.slice(shownCount, shownCount + 5);
   shownCount += nextEvents.length;
 
   nextEvents.forEach((event) => {
@@ -85,13 +100,14 @@ function renderEvents() {
     eventsContainer.appendChild(card);
   });
 
-  loadMoreBtn.style.display = shownCount < allEvents.length ? "inline-flex" : "none";
+  loadMoreBtn.style.display =
+    shownCount < filteredEvents.length ? "inline-flex" : "none";
 }
 
 function renderMapPins() {
   if (!map) return;
 
-  const firstFive = allEvents.slice(0, 5);
+  const firstFive = filteredEvents.slice(0, 5);
 
   firstFive.forEach((event) => {
     const venue = event._embedded.venues[0];
@@ -108,11 +124,12 @@ function renderMapPins() {
 
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const keyword = searchInput.value.trim(); // optional
-  const location = locationInput.value.trim(); // optional
+  const keyword = searchInput.value.trim();
+  const location = locationInput.value.trim();
   fetchEvents(keyword, location);
 });
 
 loadMoreBtn.addEventListener("click", () => {
   renderEvents();
 });
+

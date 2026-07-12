@@ -19,10 +19,8 @@ async function loadEvent() {
     document.getElementById("event-location").textContent =
       `${venue.city.name}, ${venue.state?.name || ""}`;
 
-    // Buy Tickets button → official Ticketmaster checkout
     document.getElementById("ticket-link").href = event.url;
 
-    // Full-screen seat map modal
     const openBtn = document.getElementById("open-seatmap");
     const closeBtn = document.getElementById("close-seatmap");
     const modal = document.getElementById("seatmap-modal");
