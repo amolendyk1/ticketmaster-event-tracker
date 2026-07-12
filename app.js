@@ -4,8 +4,8 @@ const categorySelect = document.getElementById("category");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
-
-const API_URL = "https://ticketmaster-event-tracker.vercel.app";
+// FINAL: Your correct Vercel backend URL
+const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 async function fetchEvents(keyword, category) {
   statusEl.textContent = "Loading…";
