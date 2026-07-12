@@ -7,7 +7,7 @@ const eventsContainer = document.getElementById("events-container");
 const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 async function fetchEvents(keyword, category) {
-  statusEl.textContent = "Loading…";
+  statusEl.textContent = "Loading events…";
 
   const url = `${API_URL}?keyword=${encodeURIComponent(
     keyword
@@ -27,23 +27,31 @@ async function fetchEvents(keyword, category) {
     statusEl.textContent = `Found ${events.length} events`;
 
     eventsContainer.innerHTML = events
-      .map(
-        (event) => `
-      <a class="tm-event-card" href="event.html?id=${event.id}">
-        <h3>${event.name}</h3>
-        <p>${event.dates.start.localDate} — ${
-          event._embedded.venues[0].city.name
-        }, ${event._embedded.venues[0].state.name}</p>
-      </a>
-    `
-      )
+      .map((event) => {
+        const venue = event._embedded.venues[0];
+        return `
+          <a class="tm-event-card" href="event.html?id=${event.id}">
+            <h3>${event.name}</h3>
+            <p>${event.dates.start.localDate} — ${venue.city.name}, ${
+          venue.state?.name || ""
+        }</p>
+          </a>
+        `;
+      })
       .join("");
   } catch (err) {
-    statusEl.textContent = "Error fetching events";
+    statusEl.textContent = "Error fetching events.";
+    eventsContainer.innerHTML = "";
   }
 }
 
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  fetchEvents(searchInput.value.trim(), categorySelect.value);
+  const keyword = searchInput.value.trim();
+  const category = categorySelect.value;
+  if (!keyword) {
+    statusEl.textContent = "Please enter a keyword.";
+    return;
+  }
+  fetchEvents(keyword, category);
 });

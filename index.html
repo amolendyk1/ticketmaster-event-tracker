@@ -2,39 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Ticketmaster Search</title>
+  <title>Find Events</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body class="tm-page">
+<body class="tm-body">
+  <header class="tm-header">
+    <div class="tm-header-inner">
+      <h1 class="tm-logo">Event Explorer</h1>
+      <nav class="tm-nav">
+        <a href="index.html">Search</a>
+      </nav>
+    </div>
+  </header>
 
-  <div class="tm-wrapper">
-    <div class="tm-card">
+  <main class="tm-main">
+    <section class="tm-panel tm-panel--search">
       <h2>Search Events</h2>
 
       <form id="search-form" class="tm-form">
-        <label>Keyword</label>
-        <input id="search-input" type="text" placeholder="Search artists, teams, venues..." />
+        <div class="tm-form-row">
+          <label for="search-input">Keyword</label>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Noah Kahan, Celtics, Broadway..."
+          />
+        </div>
 
-        <label>Category</label>
-        <select id="category">
-          <option value="">All</option>
-          <option value="Music">Music</option>
-          <option value="Sports">Sports</option>
-          <option value="Arts & Theatre">Arts & Theatre</option>
-        </select>
+        <div class="tm-form-row">
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="">All</option>
+            <option value="Music">Music</option>
+            <option value="Sports">Sports</option>
+            <option value="Arts & Theatre">Arts & Theatre</option>
+          </select>
+        </div>
 
-        <button type="submit">Search</button>
+        <button type="submit" class="tm-button">Search</button>
       </form>
 
       <p id="status" class="tm-status"></p>
-    </div>
+    </section>
 
-    <div class="tm-results-card">
+    <section class="tm-panel tm-panel--results">
       <h2>Events</h2>
-      <div id="events-container" class="tm-events-container"></div>
-    </div>
-  </div>
+      <div id="events-container" class="tm-events-grid"></div>
+    </section>
+  </main>
+
+  <footer class="tm-footer">
+    <p>Powered by Ticketmaster Discovery API</p>
+  </footer>
 
   <script src="app.js"></script>
 </body>

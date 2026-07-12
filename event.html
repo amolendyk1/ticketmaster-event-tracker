@@ -6,22 +6,44 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body class="tm-page">
-
-  <div class="tm-wrapper">
-    <div class="tm-results-card">
-      <h2 id="event-name"></h2>
-
-      <p id="event-date"></p>
-      <p id="event-venue"></p>
-      <p id="event-location"></p>
-
-      <a id="ticket-link" class="tm-ticket-button" target="_blank">Buy Tickets</a>
-
-      <h3>Seat Map</h3>
-      <div id="seatmap" class="tm-seatmap"></div>
+<body class="tm-body">
+  <header class="tm-header">
+    <div class="tm-header-inner">
+      <h1 class="tm-logo">Event Explorer</h1>
+      <nav class="tm-nav">
+        <a href="index.html">Back to Search</a>
+      </nav>
     </div>
-  </div>
+  </header>
+
+  <main class="tm-main tm-main--detail">
+    <section class="tm-panel tm-panel--detail">
+      <div class="tm-detail-header">
+        <h2 id="event-name"></h2>
+        <p id="event-date" class="tm-detail-date"></p>
+        <p id="event-venue" class="tm-detail-venue"></p>
+        <p id="event-location" class="tm-detail-location"></p>
+      </div>
+
+      <div class="tm-detail-actions">
+        <a id="ticket-link" class="tm-button tm-button--primary" target="_blank">
+          Buy Tickets
+        </a>
+      </div>
+
+      <div class="tm-seatmap-wrapper">
+        <h3>Seat Map & Tickets</h3>
+        <p class="tm-seatmap-note">
+          View live seat availability, sections, and prices directly from Ticketmaster.
+        </p>
+        <div id="seatmap" class="tm-seatmap"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tm-footer">
+    <p>Seat map and checkout provided by Ticketmaster</p>
+  </footer>
 
   <script src="event.js"></script>
 </body>
