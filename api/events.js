@@ -1,45 +1,97 @@
-export default async function handler(req, res) {
-  const { keyword } = req.query;
+/* ============================================================
+   events.js — Map + Event Detail Logic for Ticketmaster App
+   Works with GitHub Pages (client-side only)
+============================================================ */
 
-  if (!keyword) {
-    return res.status(400).json({ error: "Keyword is required" });
-  }
+/* 
+  This file handles:
+  - Map initialization
+  - Centering map on events
+  - Adding markers
+  - Updating map when an event is expanded
+  - Smooth marker replacement
+*/
 
-  const API_KEY = process.env.TICKETMASTER_API_KEY;
-  console.log("Using API_KEY:", API_KEY ? "[HIDDEN]" : "NOT SET");
+/* ============================================================
+   MAP INITIALIZATION
+============================================================ */
 
-  if (!API_KEY) {
-    return res.status(500).json({ error: "TICKETMASTER_API_KEY is not set" });
-  }
+let map;
+let currentMarker = null;
 
-  const url = new URL("https://app.ticketmaster.com/discovery/v2/events.json");
-  url.searchParams.set("apikey", API_KEY);
-  url.searchParams.set("keyword", keyword);
-  url.searchParams.set("countryCode", "US");
-  url.searchParams.set("size", "50");
-  url.searchParams.set("locale", "*");
+// Initialize map once the page loads
+document.addEventListener("DOMContentLoaded", () => {
+  map = L.map("event-map").setView([37.7749, -122.4194], 4); // default USA view
 
-  try {
-    console.log("Fetching from:", url.toString().replace(API_KEY, "[HIDDEN]"));
-    const response = await fetch(url.toString());
-    
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("API Error:", response.status, errorData);
-      return res.status(502).json({ 
-        error: "Ticketmaster API error", 
-        status: response.status,
-        details: errorData
-      });
-    }
-    
-    const data = await response.json();
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error("Network error:", error);
-    return res.status(500).json({ 
-      error: "Network error", 
-      details: error.message 
-    });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+  }).addTo(map);
+});
+
+/* ============================================================
+   CENTER MAP ON FIRST EVENT
+============================================================ */
+
+function centerMapOnFirst(events) {
+  if (!events || events.length === 0) return;
+
+  const venue = events[0]._embedded?.venues?.[0];
+  const lat = venue?.location?.latitude;
+  const lng = venue?.location?.longitude;
+
+  if (lat && lng) {
+    map.setView([lat, lng], 10);
+    placeMarker(lat, lng, events[0].name);
   }
 }
+
+/* ============================================================
+   PLACE MARKER
+============================================================ */
+
+function placeMarker(lat, lng, label) {
+  // Remove old marker
+  if (currentMarker) {
+    map.removeLayer(currentMarker);
+  }
+
+  // Add new marker
+  currentMarker = L.marker([lat, lng]).addTo(map);
+
+  if (label) {
+    currentMarker.bindPopup(label).openPopup();
+  }
+}
+
+/* ============================================================
+   UPDATE MAP WHEN EVENT EXPANDS
+============================================================ */
+
+function updateMapForEvent(event) {
+  const venue = event._embedded?.venues?.[0];
+  const lat = venue?.location?.latitude;
+  const lng = venue?.location?.longitude;
+
+  if (!lat || !lng) return;
+
+  map.setView([lat, lng], 12);
+  placeMarker(lat, lng, event.name);
+}
+
+/* ============================================================
+   HANDLE EXPANDABLE EVENT CARDS
+============================================================ */
+
+window.toggleDetails = function (index) {
+  const details = document.getElementById(`details-${index}`);
+
+  // Toggle visibility
+  const isOpen = details.style.display === "block";
+  details.style.display = isOpen ? "none" : "block";
+
+  // Update map only when opening
+  if (!isOpen && window.eventData) {
+    const event = window.eventData[index];
+    updateMapForEvent(event);
+  }
+};

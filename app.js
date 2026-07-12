@@ -1,97 +1,57 @@
-// ===============================
-// Ticketmaster Event Tracker (GitHub Pages Version)
-// ===============================
-
-// DOM elements
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
-// Your PUBLIC Ticketmaster API key
-// IMPORTANT: This must be the "Browser" key from Ticketmaster Developer Portal
-const API_KEY = "YOUR_PUBLIC_TICKETMASTER_KEY";
+const API_KEY = "YOUR_BROWSER_API_KEY"; // IMPORTANT
 
-// Show loading
-function showLoading(isLoading) {
-  if (isLoading) {
-    statusEl.innerHTML = `<span class="loading-spinner"></span> Loading...`;
-  }
-}
+// Map setup
+let map = L.map("event-map").setView([37.7749, -122.4194], 4);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-// Show status message
-function showStatus(message) {
-  statusEl.textContent = message;
-  statusEl.className = "tm-status";
-}
-
-// Show error message
-function showError(message) {
-  statusEl.textContent = message;
-  statusEl.className = "tm-status";
-  eventsContainer.innerHTML = "";
-}
-
-// Fetch events directly from Ticketmaster API
+// Fetch events
 async function fetchEvents(keyword) {
-  if (!keyword) {
-    showError("Please enter a search term");
-    return;
-  }
+  statusEl.textContent = "Loading...";
 
-  showLoading(true);
-  showStatus(`Searching for "${keyword}"...`);
+  const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
+    keyword
+  )}&countryCode=US&size=50`;
 
   try {
-    const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
-      keyword
-    )}&countryCode=US&size=50&locale=*`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error("Ticketmaster API error");
-    }
-
-    const data = await response.json();
+    const res = await fetch(url);
+    const data = await res.json();
 
     if (!data._embedded?.events) {
-      showError("No events found. Try another search.");
+      statusEl.textContent = "No events found.";
+      eventsContainer.innerHTML = "";
       return;
     }
 
+    statusEl.textContent = `Found ${data._embedded.events.length} events`;
     renderEvents(data._embedded.events);
-    showStatus(`Found ${data._embedded.events.length} events`);
 
-  } catch (error) {
-    console.error(error);
-    showError("Error fetching events");
-  } finally {
-    showLoading(false);
+  } catch (err) {
+    statusEl.textContent = "Error fetching events";
   }
 }
 
-// Render events with expandable cards
+// Render events
 function renderEvents(events) {
   eventsContainer.innerHTML = events
     .map((event, index) => {
-      const name = event.name || "Untitled Event";
-      const date = event.dates?.start?.localDate || "Date not available";
-      const time = event.dates?.start?.localTime || "";
-      const venue = event._embedded?.venues?.[0]?.name || "Venue not specified";
+      const name = event.name;
+      const date = event.dates?.start?.localDate || "";
+      const venue = event._embedded?.venues?.[0]?.name || "";
       const city = event._embedded?.venues?.[0]?.city?.name || "";
       const state = event._embedded?.venues?.[0]?.state?.name || "";
-      const url = event.url || "#";
+      const url = event.url;
 
       return `
         <div class="tm-event-card" onclick="toggleDetails(${index})">
-          <div class="tm-event-header">
-            <div class="tm-event-title">${name}</div>
-            <div class="tm-event-date">${date}</div>
-          </div>
+          <h3>${name}</h3>
+          <p>${date} — ${city}, ${state}</p>
 
           <div id="details-${index}" class="tm-event-details">
-            <p><strong>Time:</strong> ${time}</p>
             <p><strong>Venue:</strong> ${venue}</p>
             <p><strong>Location:</strong> ${city}, ${state}</p>
             <a href="${url}" target="_blank">Find Tickets</a>
@@ -100,19 +60,28 @@ function renderEvents(events) {
       `;
     })
     .join("");
+
+  window.eventData = events;
 }
 
-// Expand/collapse event details
+// Expand/collapse + map update
 function toggleDetails(index) {
   const details = document.getElementById(`details-${index}`);
   details.style.display = details.style.display === "block" ? "none" : "block";
+
+  const event = window.eventData[index];
+  const venue = event._embedded?.venues?.[0];
+  const lat = venue?.location?.latitude;
+  const lng = venue?.location?.longitude;
+
+  if (lat && lng) {
+    map.setView([lat, lng], 12);
+    L.marker([lat, lng]).addTo(map).bindPopup(event.name).openPopup();
+  }
 }
 
-// Search form listener
+// Search listener
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
   fetchEvents(searchInput.value.trim());
 });
-
-// Initial load
-fetchEvents("music");

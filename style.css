@@ -1,13 +1,16 @@
 /* ============================================================
-   TICKETMASTER PAGE — striped aesthetic + expandable cards
+   GLOBAL
 ============================================================ */
 
-.ticketmaster-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background: #fffde8; /* cream */
+}
 
-  /* your striped background */
+/* HEADER — striped only */
+.site-header {
   background: repeating-linear-gradient(
     90deg,
     #f1e6ad 0px,
@@ -17,18 +20,64 @@
     #f1e6ad 30px,
     #f1e6ad 45px
   );
+  color: #402821;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+}
+
+.nav-link {
+  color: #402821;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* FOOTER */
+.thin-footer {
+  background: #402821;
+  color: #f1e6ad;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 600;
+}
+
+/* ============================================================
+   TICKETMASTER PAGE
+============================================================ */
+
+.ticketmaster-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .tm-wrapper {
   max-width: 900px;
-  margin: 60px auto;
+  margin: 40px auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
-/* Search box (brown card) */
+/* Search box */
 .tm-card {
   background: #402821;
   border: 2px solid #402821;
@@ -42,19 +91,13 @@
 .tm-card h2 {
   margin: 0;
   font-size: 1.8rem;
-  font-weight: 700;
 }
 
-/* Search form */
+/* Form */
 .tm-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.tm-form label {
-  font-weight: 600;
-  color: #f1e6ad;
 }
 
 .tm-form input {
@@ -64,26 +107,13 @@
   color: #402821;
 }
 
-.tm-form button {
-  padding: 12px;
-  background: #f1e6ad;
-  color: #402821;
-  font-weight: 700;
-  border: 1px solid #402821;
-  cursor: pointer;
-}
-
-.tm-form button:hover {
-  background: #e8dca4;
-}
-
 /* Status */
 .tm-status {
   font-weight: 700;
   color: #f1e6ad;
 }
 
-/* Results box (cream card) */
+/* Results box */
 .tm-results-card {
   background: #fffde8;
   border: 2px solid #402821;
@@ -95,8 +125,6 @@
 
 .tm-results-card h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
   color: #402821;
 }
 
@@ -107,34 +135,20 @@
   gap: 20px;
 }
 
-/* Collapsed event card */
+/* Event card */
 .tm-event-card {
   background: #fffde8;
   border: 2px solid #402821;
   padding: 20px;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .tm-event-card:hover {
   background: #f7f0c8;
 }
 
-.tm-event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tm-event-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #402821;
-}
-
-.tm-event-date {
-  font-size: 16px;
-  font-weight: 600;
+.tm-event-card h3 {
+  margin: 0 0 8px 0;
   color: #402821;
 }
 
@@ -146,11 +160,6 @@
   display: none;
 }
 
-.tm-event-details p {
-  margin: 6px 0;
-  color: #402821;
-}
-
 .tm-event-details a {
   display: inline-block;
   margin-top: 10px;
@@ -159,10 +168,11 @@
   color: #fffde8;
   text-decoration: none;
   font-weight: 700;
+}
+
+/* Map */
+#event-map {
+  width: 100%;
+  height: 350px;
   border: 2px solid #402821;
 }
-
-.tm-event-details a:hover {
-  background: #2d1c17;
-}
-

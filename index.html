@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<header>
+<head>
   <meta charset="UTF-8" />
   <title>Ticketmaster Event Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
-</header>
+  <script defer src="app.js"></script>
+  <script defer src="events.js"></script>
+
+  <!-- Leaflet Map Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
 
 <body class="ticketmaster-page">
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <h1 class="site-title">Ticketmaster Event Tracker</h1>
-    <nav class="site-nav">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="ai-chat.html" class="nav-link">AI Chat</a>
-    </nav>
-  </header>
+<header class="site-header">
+  <h1 class="site-title">Ticketmaster Event Tracker</h1>
+  <nav class="site-nav">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="ticketmaster.html" class="nav-link">Ticketmaster</a>
+  </nav>
+</header>
 
-  <!-- MAIN CONTENT -->
-  <main class="tm-wrapper">
-    
+<main>
+  <div class="tm-wrapper">
+
     <div class="tm-card">
       <h2>Search Events</h2>
 
       <form id="search-form" class="tm-form">
-        <label for="search-input">Search by artist, venue, city, or keyword</label>
-        <input id="search-input" type="text" placeholder="e.g. Taylor Swift, Boston, TD Garden" />
+        <input id="search-input" type="text" placeholder="Search concerts, artists, venues..." />
         <button type="submit">Search</button>
       </form>
 
@@ -35,17 +37,18 @@
     </div>
 
     <div class="tm-results-card">
-      <h2>Results</h2>
+      <h2>Events</h2>
       <div id="events-container" class="tm-events-container"></div>
     </div>
 
-  </main>
+    <div id="event-map"></div>
 
-  <!-- FOOTER -->
-  <footer class="thin-footer">
-    <p>Powered by Ticketmaster Discovery API</p>
-  </footer>
+  </div>
+</main>
 
-  <script src="app.js"></script>
+<footer class="thin-footer">
+  <p>Powered by Ticketmaster API · © 2026 Ally</p>
+</footer>
+
 </body>
 </html>
