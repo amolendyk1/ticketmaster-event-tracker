@@ -1,15 +1,4 @@
-/* ============================================================
-   GLOBAL
-============================================================ */
-
-html, body {
-  margin: 0;
-  padding: 0;
-  font-family: "Inter", sans-serif;
-  background: #fffde8; /* cream */
-}
-
-/* HEADER — striped only */
+/* striped header only */
 .site-header {
   background: repeating-linear-gradient(
     90deg,
@@ -28,46 +17,7 @@ html, body {
   padding: 0 24px;
 }
 
-.site-title {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
-.site-nav {
-  display: flex;
-  gap: 22px;
-}
-
-.nav-link {
-  color: #402821;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
-}
-
-/* FOOTER */
-.thin-footer {
-  background: #402821;
-  color: #f1e6ad;
-  text-align: center;
-  padding: 10px 0;
-  font-weight: 600;
-}
-
-/* ============================================================
-   TICKETMASTER PAGE
-============================================================ */
-
-.ticketmaster-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
+/* Ticketmaster page */
 .tm-wrapper {
   max-width: 900px;
   margin: 40px auto;
@@ -77,65 +27,25 @@ html, body {
   gap: 30px;
 }
 
-/* Search box */
 .tm-card {
   background: #402821;
   border: 2px solid #402821;
   padding: 40px;
   color: #f1e6ad;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
-.tm-card h2 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-/* Form */
 .tm-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.tm-form input {
-  padding: 12px;
-  background: #fffde8;
-  border: 1px solid #402821;
-  color: #402821;
-}
-
-/* Status */
-.tm-status {
-  font-weight: 700;
-  color: #f1e6ad;
-}
-
-/* Results box */
 .tm-results-card {
   background: #fffde8;
   border: 2px solid #402821;
   padding: 25px 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
-.tm-results-card h2 {
-  margin: 0;
-  color: #402821;
-}
-
-/* Event list */
-.tm-events-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Event card */
 .tm-event-card {
   background: #fffde8;
   border: 2px solid #402821;
@@ -143,16 +53,6 @@ html, body {
   cursor: pointer;
 }
 
-.tm-event-card:hover {
-  background: #f7f0c8;
-}
-
-.tm-event-card h3 {
-  margin: 0 0 8px 0;
-  color: #402821;
-}
-
-/* Expanded details */
 .tm-event-details {
   margin-top: 15px;
   padding-top: 15px;
@@ -160,17 +60,6 @@ html, body {
   display: none;
 }
 
-.tm-event-details a {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 14px;
-  background: #402821;
-  color: #fffde8;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-/* Map */
 #event-map {
   width: 100%;
   height: 350px;

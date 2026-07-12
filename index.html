@@ -7,7 +7,7 @@
   <script defer src="app.js"></script>
   <script defer src="events.js"></script>
 
-  <!-- Leaflet Map Library -->
+  <!-- Leaflet Map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
@@ -29,7 +29,16 @@
       <h2>Search Events</h2>
 
       <form id="search-form" class="tm-form">
-        <input id="search-input" type="text" placeholder="Search concerts, artists, venues..." />
+        <input id="search-input" type="text" placeholder="Concerts, sports, Broadway…" />
+
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="">All</option>
+          <option value="Music">Concerts</option>
+          <option value="Sports">Sports</option>
+          <option value="Arts & Theatre">Broadway / Theatre</option>
+        </select>
+
         <button type="submit">Search</button>
       </form>
 

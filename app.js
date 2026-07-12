@@ -1,21 +1,19 @@
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
+const categorySelect = document.getElementById("category");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
 const API_KEY = "YOUR_BROWSER_API_KEY"; // IMPORTANT
 
-// Map setup
-let map = L.map("event-map").setView([37.7749, -122.4194], 4);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-
-// Fetch events
-async function fetchEvents(keyword) {
+async function fetchEvents(keyword, category) {
   statusEl.textContent = "Loading...";
+
+  let categoryParam = category ? `&classificationName=${category}` : "";
 
   const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
     keyword
-  )}&countryCode=US&size=50`;
+  )}${categoryParam}&countryCode=US&size=50`;
 
   try {
     const res = await fetch(url);
@@ -27,15 +25,17 @@ async function fetchEvents(keyword) {
       return;
     }
 
-    statusEl.textContent = `Found ${data._embedded.events.length} events`;
-    renderEvents(data._embedded.events);
+    window.eventData = data._embedded.events;
+    statusEl.textContent = `Found ${window.eventData.length} events`;
+
+    renderEvents(window.eventData);
+    centerMapOnFirst(window.eventData);
 
   } catch (err) {
     statusEl.textContent = "Error fetching events";
   }
 }
 
-// Render events
 function renderEvents(events) {
   eventsContainer.innerHTML = events
     .map((event, index) => {
@@ -60,28 +60,9 @@ function renderEvents(events) {
       `;
     })
     .join("");
-
-  window.eventData = events;
 }
 
-// Expand/collapse + map update
-function toggleDetails(index) {
-  const details = document.getElementById(`details-${index}`);
-  details.style.display = details.style.display === "block" ? "none" : "block";
-
-  const event = window.eventData[index];
-  const venue = event._embedded?.venues?.[0];
-  const lat = venue?.location?.latitude;
-  const lng = venue?.location?.longitude;
-
-  if (lat && lng) {
-    map.setView([lat, lng], 12);
-    L.marker([lat, lng]).addTo(map).bindPopup(event.name).openPopup();
-  }
-}
-
-// Search listener
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  fetchEvents(searchInput.value.trim());
+  fetchEvents(searchInput.value.trim(), categorySelect.value);
 });
