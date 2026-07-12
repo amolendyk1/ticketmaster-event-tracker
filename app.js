@@ -3,9 +3,11 @@ const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster"
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
 const locationInput = document.getElementById("location-input");
+const categorySelect = document.getElementById("category-select");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 const loadMoreBtn = document.getElementById("load-more");
+const filterTag = document.getElementById("filter-tag");
 
 let allEvents = [];
 let filteredEvents = [];
@@ -37,10 +39,11 @@ navigator.geolocation.getCurrentPosition(
   }
 );
 
-async function fetchEvents(keyword, locationFilter) {
+async function fetchEvents(keyword, locationFilter, categoryFilter) {
   statusEl.textContent = "Loading events…";
   eventsContainer.innerHTML = "";
   loadMoreBtn.style.display = "none";
+  filterTag.style.display = "none";
   allEvents = [];
   filteredEvents = [];
   shownCount = 0;
@@ -53,37 +56,51 @@ async function fetchEvents(keyword, locationFilter) {
 
     allEvents = data._embedded?.events || [];
 
-    // LOCATION FILTER FIXED
-    if (locationFilter) {
-      const filter = locationFilter.toLowerCase();
+    // Apply location + category filters
+    filteredEvents = allEvents.filter((event) => {
+      const venue = event._embedded.venues[0];
+      const city = venue.city.name.toLowerCase();
+      const state = (venue.state?.name || "").toLowerCase();
 
-      filteredEvents = allEvents.filter((event) => {
-        const venue = event._embedded.venues[0];
-        const city = venue.city.name.toLowerCase();
-        const state = (venue.state?.name || "").toLowerCase();
+      const classification =
+        (event.classifications?.[0]?.segment?.name ||
+          event.classifications?.[0]?.genre?.name ||
+          "").toLowerCase();
 
-        return city.includes(filter) || state.includes(filter);
-      });
-    } else {
-      filteredEvents = allEvents;
-    }
+      let locationMatch = true;
+      let categoryMatch = true;
+
+      if (locationFilter) {
+        const filter = locationFilter.toLowerCase();
+        locationMatch = city.includes(filter) || state.includes(filter);
+      }
+
+      if (categoryFilter) {
+        const cat = categoryFilter.toLowerCase();
+        categoryMatch = classification.includes(cat);
+      }
+
+      return locationMatch && categoryMatch;
+    });
 
     if (!filteredEvents.length) {
-      statusEl.textContent = "No events found for this location.";
+      statusEl.textContent = "No events found for these filters.";
       return;
     }
 
-    // Show filter tag
-    const filterTag = document.getElementById("filter-tag");
-    if (locationFilter) {
-      filterTag.textContent = `Filtering by: ${locationFilter}`;
-      filterTag.style.display = "inline-block";
-    } else {
-      filterTag.style.display = "none";
-}
-
-
     statusEl.textContent = `Found ${filteredEvents.length} events`;
+
+    // Show filter tag
+    const parts = [];
+    if (locationFilter) parts.push(`Location: ${locationFilter}`);
+    if (categoryFilter) {
+      const label = categorySelect.options[categorySelect.selectedIndex].text;
+      parts.push(`Type: ${label}`);
+    }
+    if (parts.length) {
+      filterTag.textContent = parts.join(" • ");
+      filterTag.style.display = "inline-block";
+    }
 
     renderEvents();
     renderMapPins();
@@ -136,10 +153,10 @@ searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const keyword = searchInput.value.trim();
   const location = locationInput.value.trim();
-  fetchEvents(keyword, location);
+  const category = categorySelect.value.trim();
+  fetchEvents(keyword, location, category);
 });
 
 loadMoreBtn.addEventListener("click", () => {
   renderEvents();
 });
-

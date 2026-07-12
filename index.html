@@ -31,6 +31,18 @@
           <input id="location-input" type="text" placeholder="Boston, MA…" />
         </div>
 
+        <div class="tm-form-row">
+          <label for="category-select">Event Type</label>
+          <select id="category-select">
+            <option value="">All Events</option>
+            <option value="Music">Concerts</option>
+            <option value="Sports">Sports Games</option>
+            <option value="Arts & Theatre">Musicals & Theatre</option>
+            <option value="Comedy">Comedy Shows</option>
+            <option value="Family">Family Events</option>
+          </select>
+        </div>
+
         <button type="submit" class="tm-button">Search</button>
       </form>
 
@@ -46,7 +58,6 @@
       <div id="events-container" class="tm-events-grid"></div>
       <button id="load-more" class="tm-button" style="display:none;">Load More</button>
     </section>
-
 
     <!-- MAP PANEL -->
     <section class="tm-panel tm-panel--map">
@@ -64,4 +75,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
