@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function placeMarker(lat, lng, label) {
-  if (!lat || !lng) return; // prevent crashes
+  if (!lat || !lng) return;
 
   if (currentMarker) map.removeLayer(currentMarker);
 
@@ -37,7 +37,7 @@ window.toggleDetails = function (index) {
   const isOpen = details.style.display === "block";
   details.style.display = isOpen ? "none" : "block";
 
-  if (!isOpen && window.eventData) {
+  if (!isOpen && window.eventData && window.eventData[index]) {
     const event = window.eventData[index];
     const venue = event._embedded?.venues?.[0];
     const lat = venue?.location?.latitude;
@@ -49,4 +49,3 @@ window.toggleDetails = function (index) {
     placeMarker(lat, lng, event.name);
   }
 };
-
