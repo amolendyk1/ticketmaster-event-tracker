@@ -2,213 +2,120 @@ const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
-const favoritesContainer = document.getElementById("favorites-container");
 
-const FAVORITES_KEY = "tm_favorites";
+// Debug mode - set to false in production
+const DEBUG_MODE = true;
 
-function loadFavorites() {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveFavorites(favs) {
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
-}
-
-let favorites = loadFavorites();
-
-// -------- FETCH FROM VERCEL BACKEND --------
 async function fetchEvents(keyword) {
-  statusEl.textContent = "Loading events...";
-  eventsContainer.innerHTML = "";
-
-  try {
-    const res = await fetch(`/api/events?keyword=${encodeURIComponent(keyword)}`);
-
-    if (!res.ok) {
-      throw new Error(`Server error: ${res.status}`);
-    }
-
-    const data = await res.json();
-    const events = data?._embedded?.events || [];
-
-    if (events.length === 0) {
-      statusEl.textContent = "No events found. Try a different search.";
-      return;
-    }
-
-    statusEl.textContent = `Found ${events.length} event(s).`;
-    renderEvents(events);
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = "Error fetching events.";
-  }
-}
-
-// -------- RENDERING --------
-function renderEvents(events) {
-  eventsContainer.innerHTML = "";
-
-  events.forEach((event) => {
-    const card = createEventCard(event, false);
-    eventsContainer.appendChild(card);
-  });
-}
-
-function renderFavorites() {
-  favoritesContainer.innerHTML = "";
-
-  if (favorites.length === 0) {
-    favoritesContainer.innerHTML =
-      "<p class='event-meta'>No favorites yet.</p>";
+  if (!keyword) {
+    showError("Please enter a search term");
     return;
   }
 
-  favorites.forEach((fav) => {
-    const card = createEventCard(fav, true);
-    favoritesContainer.appendChild(card);
-  });
+  showLoading(true);
+  showStatus(`Searching for "${keyword}"...`);
+
+  try {
+    if (DEBUG_MODE) console.log("[DEBUG] Starting fetch for:", keyword);
+
+    const startTime = Date.now();
+    const response = await fetch(`/api/events?keyword=${encodeURIComponent(keyword)}`);
+    const fetchTime = Date.now() - startTime;
+
+    if (DEBUG_MODE) {
+      console.log(`[DEBUG] Fetch completed in ${fetchTime}ms`);
+      console.log("[DEBUG] Response status:", response.status);
+    }
+
+    if (!response.ok) {
+      const errorData = await parseErrorResponse(response);
+      throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (DEBUG_MODE) console.log("[DEBUG] API response data:", data);
+
+    if (!data._embedded?.events) {
+      throw new Error("No events found in response data");
+    }
+
+    renderEvents(data._embedded.events);
+    showStatus(`Found ${data._embedded.events.length} events`);
+    
+  } catch (error) {
+    if (DEBUG_MODE) console.error("[DEBUG] Full error:", error);
+    
+    let errorMessage = "Error fetching events";
+    
+    if (error.message.includes("Failed to fetch")) {
+      errorMessage = "Network error - check your connection";
+    } else if (error.message.includes("No events found")) {
+      errorMessage = "No events found. Try a different search term.";
+    } else if (error.message.includes("HTTP error")) {
+      errorMessage = `Server error: ${error.message}`;
+    }
+
+    showError(errorMessage);
+  } finally {
+    showLoading(false);
+  }
 }
 
-// -------- MAP EVENT FIELDS --------
-function mapEvent(event) {
-  const name = event.name || "Untitled event";
-
-  const venue = event._embedded?.venues?.[0]?.name || "Venue TBA";
-  const city = event._embedded?.venues?.[0]?.city?.name || "";
-  const state = event._embedded?.venues?.[0]?.state?.name || "";
-
-  const date = event.dates?.start?.localDate || "Date TBA";
-  const time = event.dates?.start?.localTime || "";
-
-  const priceRange = event.priceRanges?.[0]
-    ? `${event.priceRanges[0].min}–${event.priceRanges[0].max} ${event.priceRanges[0].currency}`
-    : "Price TBA";
-
-  const url = event.url || "#";
-  const id = event.id;
-
-  return {
-    id,
-    name,
-    venue,
-    city,
-    state,
-    date,
-    time,
-    priceRange,
-    url,
-  };
+// Enhanced error parsing
+async function parseErrorResponse(response) {
+  try {
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      return await response.json();
+    }
+    return { message: await response.text() };
+  } catch {
+    return { message: "Unknown error occurred" };
+  }
 }
 
-// -------- CREATE EVENT CARD --------
-function createEventCard(eventRaw, isFavoriteCard) {
-  const event = mapEvent(eventRaw);
-
-  const card = document.createElement("article");
-  card.className = "event-card";
-
-  const header = document.createElement("div");
-  header.className = "event-header";
-
-  const title = document.createElement("div");
-  title.className = "event-title";
-  title.textContent = event.name;
-
-  const venue = document.createElement("div");
-  venue.className = "event-venue";
-  venue.textContent = event.city
-    ? `${event.venue} • ${event.city}, ${event.state}`
-    : event.venue;
-
-  header.appendChild(title);
-  header.appendChild(venue);
-
-  const meta = document.createElement("div");
-  meta.className = "event-meta";
-  meta.textContent = `${event.date}${
-    event.time ? " at " + event.time : ""
-  } • ${event.priceRange}`;
-
-  // Map iframe
-  const mapFrame = document.createElement("iframe");
-  mapFrame.className = "map-frame";
-  mapFrame.width = "100%";
-  mapFrame.height = "200";
-  mapFrame.style.border = "0";
-  mapFrame.loading = "lazy";
-  mapFrame.allowFullscreen = true;
-  mapFrame.referrerPolicy = "no-referrer-when-downgrade";
-
-  const mapQuery = `${event.venue}, ${event.city} ${event.state}`;
-  mapFrame.src = `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_KEY&q=${encodeURIComponent(
-    mapQuery
-  )}`;
-
-  const actions = document.createElement("div");
-  actions.className = "event-actions";
-
-  const link = document.createElement("a");
-  link.href = event.url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "View on Ticketmaster";
-  link.style.fontSize = "0.8rem";
-
-  const favBtn = document.createElement("button");
-  favBtn.className = "favorite-btn";
-  favBtn.textContent = isFavorite(event.id) ? "Saved" : "Save";
-
-  if (isFavorite(event.id)) {
-    favBtn.classList.add("active");
+function renderEvents(events) {
+  if (!events || events.length === 0) {
+    eventsContainer.innerHTML = "<p class='no-events'>No events to display</p>";
+    return;
   }
 
-  favBtn.addEventListener("click", () => {
-    toggleFavorite(eventRaw);
-  });
-
-  actions.appendChild(link);
-  actions.appendChild(favBtn);
-
-  card.appendChild(header);
-  card.appendChild(meta);
-  card.appendChild(mapFrame);
-  card.appendChild(actions);
-
-  return card;
+  eventsContainer.innerHTML = events.map(event => `
+    <div class="event-card">
+      <h3>${event.name || "Untitled Event"}</h3>
+      <p>${event.dates?.start?.localDate || "Date not available"}</p>
+      <p>${event._embedded?.venues?.[0]?.name || "Venue not specified"}</p>
+    </div>
+  `).join('');
 }
 
-// -------- FAVORITES LOGIC --------
-function isFavorite(id) {
-  return favorites.some((f) => f.id === id);
+function showStatus(message) {
+  statusEl.textContent = message;
+  statusEl.className = "status-info";
 }
 
-function toggleFavorite(eventRaw) {
-  const id = eventRaw.id;
+function showError(message) {
+  statusEl.textContent = message;
+  statusEl.className = "status-error";
+  eventsContainer.innerHTML = "";
+}
 
-  if (isFavorite(id)) {
-    favorites = favorites.filter((f) => f.id !== id);
-  } else {
-    favorites.push(eventRaw);
+function showLoading(isLoading) {
+  if (isLoading) {
+    statusEl.innerHTML = `<span class="loading-spinner"></span> Loading...`;
   }
-
-  saveFavorites(favorites);
-  renderFavorites();
 }
 
-// -------- EVENT LISTENERS --------
+// Event listener with debounce
+let searchTimeout;
 searchForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const keyword = searchInput.value.trim();
-  if (!keyword) return;
-
-  fetchEvents(keyword);
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetchEvents(searchInput.value.trim());
+  }, 300);
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderFavorites();
-});
+// Initial load
+fetchEvents("music");
