@@ -16,15 +16,20 @@ async function loadEvent() {
   document.getElementById("event-location").textContent =
     `${venue.city.name}, ${venue.state.name}`;
 
+  // ⭐ REAL Ticketmaster checkout link
   document.getElementById("ticket-link").href = event.url;
 
+  // ⭐ REAL Ticketmaster seat map embed
   loadSeatMap(eventId);
 }
 
 function loadSeatMap(eventId) {
   document.getElementById("seatmap").innerHTML = `
     <iframe
-      src="https://ticketmaster.com/seatmap/${eventId}"
+      src="https://ticketmaster.com/seatmap/?eventId=${eventId}"
+      width="100%"
+      height="650"
+      style="border:none;"
     ></iframe>
   `;
 }
