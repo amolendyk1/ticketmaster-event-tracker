@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticketmaster Event Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>Ticketmaster Event Tracker</h1>
+    <p>Search concerts and save your favorites.</p>
+  </header>
+
+  <main class="main">
+    <section class="search-section">
+      <form id="search-form">
+        <label for="search-input">Search by artist, venue, city, or keyword</label>
+        <div class="search-row">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="e.g. Taylor Swift, Boston, TD Garden"
+            required
+          />
+          <button type="submit">Search</button>
+        </div>
+      </form>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="content">
+      <section class="results-section">
+        <h2>Results</h2>
+        <div id="events-container" class="events-container"></div>
+      </section>
+
+      <section class="favorites-section">
+        <h2>Saved Favorites</h2>
+        <div id="favorites-container" class="events-container"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Powered by Ticketmaster Discovery API</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
