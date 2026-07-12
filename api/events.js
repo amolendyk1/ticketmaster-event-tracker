@@ -22,10 +22,10 @@ function centerMapOnFirst(events) {
   const lat = venue?.location?.latitude;
   const lng = venue?.location?.longitude;
 
-  if (lat && lng) {
-    map.setView([lat, lng], 10);
-    placeMarker(lat, lng, events[0].name);
-  }
+  if (!lat || !lng) return;
+
+  map.setView([lat, lng], 10);
+  placeMarker(lat, lng, events[0].name);
 }
 
 window.toggleDetails = function (index) {
@@ -39,9 +39,9 @@ window.toggleDetails = function (index) {
     const lat = venue?.location?.latitude;
     const lng = venue?.location?.longitude;
 
-    if (lat && lng) {
-      map.setView([lat, lng], 12);
-      placeMarker(lat, lng, event.name);
-    }
+    if (!lat || !lng) return;
+
+    map.setView([lat, lng], 12);
+    placeMarker(lat, lng, event.name);
   }
 };

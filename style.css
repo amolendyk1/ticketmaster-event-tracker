@@ -1,3 +1,10 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background: #fffde8;
+}
+
 /* striped header only */
 .site-header {
   background: repeating-linear-gradient(
@@ -17,7 +24,36 @@
   padding: 0 24px;
 }
 
-/* Ticketmaster page */
+.site-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+}
+
+.nav-link {
+  color: #402821;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.thin-footer {
+  background: #402821;
+  color: #f1e6ad;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 600;
+}
+
+/* Ticketmaster layout */
 .tm-wrapper {
   max-width: 900px;
   margin: 40px auto;
@@ -40,6 +76,14 @@
   gap: 14px;
 }
 
+.tm-form input,
+.tm-form select {
+  padding: 12px;
+  background: #fffde8;
+  border: 1px solid #402821;
+  color: #402821;
+}
+
 .tm-results-card {
   background: #fffde8;
   border: 2px solid #402821;
@@ -51,6 +95,10 @@
   border: 2px solid #402821;
   padding: 20px;
   cursor: pointer;
+}
+
+.tm-event-card:hover {
+  background: #f7f0c8;
 }
 
 .tm-event-details {

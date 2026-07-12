@@ -4,10 +4,10 @@ const categorySelect = document.getElementById("category");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
-const API_KEY = "YOUR_BROWSER_API_KEY"; // IMPORTANT
+const API_KEY = "YOUR_BROWSER_API_KEY"; // MUST be Browser Key
 
 async function fetchEvents(keyword, category) {
-  statusEl.textContent = "Loading...";
+  statusEl.textContent = "Loading…";
 
   let categoryParam = category ? `&classificationName=${category}` : "";
 
