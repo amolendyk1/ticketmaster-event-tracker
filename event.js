@@ -1,50 +1,99 @@
-const params = new URLSearchParams(window.location.search);
-const eventId = params.get("id");
+// DOM Elements
+const seatmapContainer = document.getElementById('seatmap-container');
+const eventDetails = document.getElementById('event-details');
+const loadingIndicator = document.getElementById('loading-indicator');
 
-const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
+// Cache for seatmap data
+const seatmapCache = new Map();
 
-async function loadEvent() {
-  if (!eventId) return;
+// Initialize with event data
+document.addEventListener('DOMContentLoaded', async () => {
+  const eventId = getEventIdFromURL(); // Implement this based on your routing
+  if (eventId) {
+    await loadEventAndSeatmap(eventId);
+  }
+});
 
+async function loadEventAndSeatmap(eventId) {
+  showLoading(true);
+  
   try {
-    const res = await fetch(`${API_URL}?id=${eventId}`);
-    const event = await res.json();
-
-    const venue = event._embedded.venues[0];
-
-    document.getElementById("event-name").textContent = event.name;
-    document.getElementById("event-date").textContent =
-      event.dates.start.localDate;
-    document.getElementById("event-venue").textContent = venue.name;
-    document.getElementById("event-location").textContent =
-      `${venue.city.name}, ${venue.state?.name || ""}`;
-
-    // Buy Tickets button → official Ticketmaster checkout
-    document.getElementById("ticket-link").href = event.url;
-
-    // Full-screen seat map modal using official event page
-    const openBtn = document.getElementById("open-seatmap");
-    const closeBtn = document.getElementById("close-seatmap");
-    const modal = document.getElementById("seatmap-modal");
-    const frame = document.getElementById("seatmap-frame");
-
-    openBtn.onclick = () => {
-      modal.style.display = "flex";
-      frame.style.opacity = "0.1";
-      frame.src = event.url; // official Ticketmaster event page
-      frame.onload = () => {
-        frame.style.opacity = "1";
-      };
-    };
-
-    closeBtn.onclick = () => {
-      modal.style.display = "none";
-      frame.src = "";
-    };
-  } catch (err) {
-    document.getElementById("event-name").textContent =
-      "Unable to load event details.";
+    // Load event details and seatmap in parallel
+    const [eventData, seatmapData] = await Promise.all([
+      fetchEventDetails(eventId),
+      fetchSeatmapData(eventId)
+    ]);
+    
+    renderEventDetails(eventData);
+    renderSeatmap(seatmapData);
+  } catch (error) {
+    console.error('Loading error:', error);
+    showError('Failed to load event data');
+  } finally {
+    showLoading(false);
   }
 }
 
-loadEvent();
+async function fetchEventDetails(eventId) {
+  const response = await fetch(`/api/events/${eventId}`);
+  if (!response.ok) throw new Error('Event details fetch failed');
+  return await response.json();
+}
+
+async function fetchSeatmapData(eventId) {
+  // Check cache first
+  if (seatmapCache.has(eventId)) {
+    return seatmapCache.get(eventId);
+  }
+
+  const response = await fetch(`/api/events/${eventId}/seatmap`);
+  if (!response.ok) throw new Error('Seatmap fetch failed');
+  
+  const data = await response.json();
+  // Cache the seatmap data
+  seatmapCache.set(eventId, data);
+  return data;
+}
+
+function renderEventDetails(event) {
+  eventDetails.innerHTML = `
+    <h2>${event.name}</h2>
+    <p>${event.date}</p>
+    <p>${event.venue}</p>
+  `;
+}
+
+function renderSeatmap(seatmapData) {
+  // Implement your seatmap rendering logic here
+  seatmapContainer.innerHTML = `
+    <div class="seatmap">
+      ${seatmapData.sections.map(section => `
+        <div class="section" data-price="${section.price}">
+          ${section.seats.map(seat => `
+            <div class="seat ${seat.available ? 'available' : 'sold'}" 
+                 data-seat="${seat.id}"></div>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  // Add interactivity
+  document.querySelectorAll('.seat.available').forEach(seat => {
+    seat.addEventListener('click', () => selectSeat(seat.dataset.seat));
+  });
+}
+
+function showLoading(show) {
+  loadingIndicator.style.display = show ? 'block' : 'none';
+  seatmapContainer.style.visibility = show ? 'hidden' : 'visible';
+}
+
+function showError(message) {
+  seatmapContainer.innerHTML = `<div class="error">${message}</div>`;
+}
+
+// Utility function - implement based on your routing
+function getEventIdFromURL() {
+  return new URLSearchParams(window.location.search).get('eventId');
+}

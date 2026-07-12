@@ -286,6 +286,16 @@
   border: none;
 }
 
+.seatmap {
+  will-change: transform; /* Optimize for animation */
+}
+
+.loading-indicator {
+  display: none;
+  position: absolute;
+  /* Add your loading spinner styles */
+}
+
 /* Footer */
 
 .tm-footer {
