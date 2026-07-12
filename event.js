@@ -19,10 +19,10 @@ async function loadEvent() {
     document.getElementById("event-location").textContent =
       `${venue.city.name}, ${venue.state?.name || ""}`;
 
-    // Buy Tickets button goes to official Ticketmaster checkout
+    // Buy Tickets button → official Ticketmaster checkout
     document.getElementById("ticket-link").href = event.url;
 
-    // Seat map: embed official Ticketmaster event page
+    // Seat map embed with loading state
     loadSeatMap(event.id);
   } catch (err) {
     document.getElementById("event-name").textContent =
@@ -31,9 +31,16 @@ async function loadEvent() {
 }
 
 function loadSeatMap(eventId) {
-  document.getElementById("seatmap").innerHTML = `
+  const seatmapDiv = document.getElementById("seatmap");
+
+  seatmapDiv.innerHTML = `
+    <div class="tm-seatmap-loading">Loading seat map and tickets…</div>
     <iframe
       src="https://www.ticketmaster.com/event/${eventId}"
+      width="100%"
+      height="800"
+      style="border:none;"
+      onload="this.previousElementSibling.style.display='none';"
     ></iframe>
   `;
 }

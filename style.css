@@ -246,3 +246,10 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.tm-seatmap-loading {
+  font-size: 0.9rem;
+  color: #7a6a56;
+  padding: 10px;
+  text-align: center;
+}
