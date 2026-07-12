@@ -6,44 +6,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header class="header">
-    <h1>Ticketmaster Event Tracker</h1>
-    <p>Search concerts and save your favorites.</p>
+
+<body class="ticketmaster-page">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <h1 class="site-title">Ticketmaster Event Tracker</h1>
+    <nav class="site-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="ai-chat.html" class="nav-link">AI Chat</a>
+    </nav>
   </header>
 
-  <main class="main">
-    <section class="search-section">
-      <form id="search-form">
+  <!-- MAIN CONTENT -->
+  <main class="tm-wrapper">
+    
+    <div class="tm-card">
+      <h2>Search Events</h2>
+
+      <form id="search-form" class="tm-form">
         <label for="search-input">Search by artist, venue, city, or keyword</label>
-        <div class="search-row">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="e.g. Taylor Swift, Boston, TD Garden"
-            required
-          />
-          <button type="submit">Search</button>
-        </div>
+        <input id="search-input" type="text" placeholder="e.g. Taylor Swift, Boston, TD Garden" />
+        <button type="submit">Search</button>
       </form>
 
-      <div id="status" class="status"></div>
-    </section>
+      <div id="status" class="tm-status"></div>
+    </div>
 
-    <section class="content">
-      <section class="results-section">
-        <h2>Results</h2>
-        <div id="events-container" class="events-container"></div>
-      </section>
+    <div class="tm-results-card">
+      <h2>Results</h2>
+      <div id="events-container" class="tm-events-container"></div>
+    </div>
 
-      <section class="favorites-section">
-        <h2>Saved Favorites</h2>
-        <div id="favorites-container" class="events-container"></div>
-      </section>
-    </section>
   </main>
 
-  <footer class="footer">
+  <!-- FOOTER -->
+  <footer class="thin-footer">
     <p>Powered by Ticketmaster Discovery API</p>
   </footer>
 

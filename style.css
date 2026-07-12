@@ -1,177 +1,121 @@
-* {
-  box-sizing: border-box;
-}
+/* ============================================================
+   TICKETMASTER PAGE — FULL aesthetic match
+============================================================ */
 
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #0b1020;
-  color: #f5f5f5;
-}
-
-.header {
-  padding: 1.5rem;
-  text-align: center;
-  background: linear-gradient(135deg, #1b2a4a, #3b5b92);
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-.header p {
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: #d0d7e5;
-}
-
-.main {
-  padding: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.search-section {
-  margin-bottom: 1.5rem;
-}
-
-.search-section label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.search-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.search-row input {
-  flex: 1;
-  padding: 0.6rem 0.8rem;
-  border-radius: 4px;
-  border: 1px solid #3b4a6a;
-  background: #101528;
-  color: #f5f5f5;
-}
-
-.search-row button {
-  padding: 0.6rem 1rem;
-  border-radius: 4px;
-  border: none;
-  background: #ff4b8b;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.search-row button:hover {
-  background: #ff2f77;
-}
-
-.status {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #ffb3c8;
-}
-
-.content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-}
-
-.results-section h2,
-.favorites-section h2 {
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-}
-
-.events-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-}
-
-.event-card {
-  background: #141a33;
-  border-radius: 6px;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid #252c4a;
+.ticketmaster-page {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+
+  background: repeating-linear-gradient(
+    90deg,
+    #f1e6ad 0px,
+    #f1e6ad 15px,
+    #fffde8 15px,
+    #fffde8 30px,
+    #f1e6ad 30px,
+    #f1e6ad 45px
+  );
 }
 
-.event-header {
+.tm-wrapper {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 20px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 30px;
 }
 
-.event-title {
+.tm-card {
+  background: #402821;
+  border: 2px solid #402821;
+  padding: 40px;
+  color: #f1e6ad;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tm-card h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.tm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tm-form label {
   font-weight: 600;
-  font-size: 0.95rem;
+  color: #f1e6ad;
 }
 
-.event-venue {
-  font-size: 0.85rem;
-  color: #c0c7dd;
+.tm-form input {
+  padding: 12px;
+  background: #fffde8;
+  border: 1px solid #402821;
+  color: #402821;
 }
 
-.event-meta {
-  font-size: 0.8rem;
-  color: #a7b0cf;
-}
-
-.event-actions {
-  margin-top: 0.4rem;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.favorite-btn {
-  padding: 0.3rem 0.7rem;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  border: 1px solid #ff4b8b;
-  background: transparent;
-  color: #ff4b8b;
+.tm-form button {
+  padding: 12px;
+  background: #f1e6ad;
+  color: #402821;
+  font-weight: 700;
+  border: 1px solid #402821;
   cursor: pointer;
 }
 
-.favorite-btn.active {
-  background: #ff4b8b;
-  color: #fff;
+.tm-form button:hover {
+  background: #e8dca4;
 }
 
-.map-frame {
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  overflow: hidden;
+.tm-status {
+  font-weight: 700;
+  color: #f1e6ad;
 }
 
-.footer {
-  padding: 1rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #a7b0cf;
+.tm-results-card {
+  background: #fffde8;
+  border: 2px solid #402821;
+  padding: 25px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .content {
-    grid-template-columns: 1fr;
-  }
-
-  .search-row {
-    flex-direction: column;
-  }
-
-  .search-row button {
-    width: 100%;
-  }
+.tm-results-card h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #402821;
 }
+
+.tm-events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tm-event-card {
+  background: #fffde8;
+  border: 2px solid #402821;
+  padding: 20px;
+  color: #402821;
+}
+
+.tm-event-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tm-event-card p {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
