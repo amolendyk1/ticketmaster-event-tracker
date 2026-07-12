@@ -1,5 +1,5 @@
 /* ============================================================
-   TICKETMASTER PAGE — FULL aesthetic match
+   TICKETMASTER PAGE — striped aesthetic + expandable cards
 ============================================================ */
 
 .ticketmaster-page {
@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
 
+  /* your striped background */
   background: repeating-linear-gradient(
     90deg,
     #f1e6ad 0px,
@@ -27,6 +28,7 @@
   gap: 30px;
 }
 
+/* Search box (brown card) */
 .tm-card {
   background: #402821;
   border: 2px solid #402821;
@@ -43,6 +45,7 @@
   font-weight: 700;
 }
 
+/* Search form */
 .tm-form {
   display: flex;
   flex-direction: column;
@@ -74,11 +77,13 @@
   background: #e8dca4;
 }
 
+/* Status */
 .tm-status {
   font-weight: 700;
   color: #f1e6ad;
 }
 
+/* Results box (cream card) */
 .tm-results-card {
   background: #fffde8;
   border: 2px solid #402821;
@@ -95,27 +100,69 @@
   color: #402821;
 }
 
+/* Event list */
 .tm-events-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
+/* Collapsed event card */
 .tm-event-card {
   background: #fffde8;
   border: 2px solid #402821;
   padding: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.tm-event-card:hover {
+  background: #f7f0c8;
+}
+
+.tm-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tm-event-title {
+  font-size: 20px;
+  font-weight: 700;
   color: #402821;
 }
 
-.tm-event-card h3 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
-  font-weight: 700;
+.tm-event-date {
+  font-size: 16px;
+  font-weight: 600;
+  color: #402821;
 }
 
-.tm-event-card p {
-  margin: 4px 0;
-  font-size: 16px;
+/* Expanded details */
+.tm-event-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #402821;
+  display: none;
+}
+
+.tm-event-details p {
+  margin: 6px 0;
+  color: #402821;
+}
+
+.tm-event-details a {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #402821;
+  color: #fffde8;
+  text-decoration: none;
+  font-weight: 700;
+  border: 2px solid #402821;
+}
+
+.tm-event-details a:hover {
+  background: #2d1c17;
 }
 
