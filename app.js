@@ -4,19 +4,25 @@ const categorySelect = document.getElementById("category");
 const statusEl = document.getElementById("status");
 const eventsContainer = document.getElementById("events-container");
 
-const API_KEY = "YOUR_BROWSER_API_KEY"; // MUST be Browser Key
+// IMPORTANT: Your Consumer Key will NEVER work here.
+// Replace this with your Vercel proxy once it's ready.
+const API_URL = "https://ticketmaster-proxy.vercel.app/api/tm";
+
 
 async function fetchEvents(keyword, category) {
   statusEl.textContent = "Loading…";
 
-  let categoryParam = category ? `&classificationName=${category}` : "";
-
-  const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
+  const url = `${API_URL}?keyword=${encodeURIComponent(
     keyword
-  )}${categoryParam}&countryCode=US&size=50`;
+  )}&category=${encodeURIComponent(category)}`;
 
   try {
     const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error("Proxy or API error");
+    }
+
     const data = await res.json();
 
     if (!data._embedded?.events) {
@@ -32,7 +38,13 @@ async function fetchEvents(keyword, category) {
     centerMapOnFirst(window.eventData);
 
   } catch (err) {
-    statusEl.textContent = "Error fetching events";
+    statusEl.textContent = "Error fetching events (API key blocked)";
+    eventsContainer.innerHTML = `
+      <p style="color:#402821; font-weight:600;">
+        Your Ticketmaster Consumer Key cannot be used in the browser.<br>
+        You must use your Vercel proxy instead.
+      </p>
+    `;
   }
 }
 

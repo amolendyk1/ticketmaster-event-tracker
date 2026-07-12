@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function placeMarker(lat, lng, label) {
+  if (!lat || !lng) return; // prevent crashes
+
   if (currentMarker) map.removeLayer(currentMarker);
 
   currentMarker = L.marker([lat, lng]).addTo(map);
@@ -18,6 +20,8 @@ function placeMarker(lat, lng, label) {
 }
 
 function centerMapOnFirst(events) {
+  if (!events || events.length === 0) return;
+
   const venue = events[0]._embedded?.venues?.[0];
   const lat = venue?.location?.latitude;
   const lng = venue?.location?.longitude;
@@ -45,3 +49,4 @@ window.toggleDetails = function (index) {
     placeMarker(lat, lng, event.name);
   }
 };
+
