@@ -1,68 +1,41 @@
-// DOM Elements
-const seatmapContainer = document.getElementById('seatmap-container');
-const eventDetails = document.getElementById('event-details');
-const loadingIndicator = document.getElementById('loading-indicator');
+export async function loadEvents(keyword, category, city) {
+  const url = `/api/ticketmaster?keyword=${encodeURIComponent(
+    keyword
+  )}&category=${encodeURIComponent(
+    category
+  )}&city=${encodeURIComponent(city)}&locale=*`;
 
-// Initialize with event data
-document.addEventListener('DOMContentLoaded', async () => {
-  const eventId = getEventIdFromURL();
-  if (eventId) {
-    await loadEvent(eventId);
-  }
-});
-
-async function loadEvent(eventId) {
-  showLoading(true);
+  const eventsContainer = document.getElementById("events-list");
+  const statusEl = document.getElementById("events-status");
 
   try {
-    const eventData = await fetchEventDetails(eventId);
-    renderEventDetails(eventData);
+    const response = await fetch(url);
+    const data = await response.json();
 
-    // Load official Ticketmaster seat map
-    renderSeatmap(eventData.url);
+    // ⭐ No events found
+    if (!data._embedded || !data._embedded.events) {
+      statusEl.textContent = "No events found.";
+      eventsContainer.innerHTML = "";
+      return;
+    }
 
-  } catch (error) {
-    console.error('Loading error:', error);
-    showError('Failed to load event data');
-  } finally {
-    showLoading(false);
+    const events = data._embedded.events;
+
+    statusEl.textContent = `${events.length} events found`;
+
+    eventsContainer.innerHTML = events
+      .map(
+        (ev) => `
+        <a class="tm-event-card" href="event.html?id=${ev.id}">
+          <h3>${ev.name}</h3>
+          <p>${ev.dates.start.localDate}</p>
+          <p>${ev._embedded?.venues?.[0]?.name || "Unknown venue"}</p>
+        </a>
+      `
+      )
+      .join("");
+  } catch (err) {
+    statusEl.textContent = "Error fetching events.";
+    console.error(err);
   }
-}
-
-async function fetchEventDetails(eventId) {
-  const response = await fetch(`/api/events/${eventId}`);
-  if (!response.ok) throw new Error('Event details fetch failed');
-  return await response.json();
-}
-
-function renderEventDetails(event) {
-  eventDetails.innerHTML = `
-    <h2>${event.name}</h2>
-    <p>${event.date}</p>
-    <p>${event.venue}</p>
-  `;
-}
-
-function renderSeatmap(ticketmasterUrl) {
-  seatmapContainer.innerHTML = `
-    <iframe 
-      src="${ticketmasterUrl}" 
-      class="seatmap-iframe"
-      style="width:100%; height:800px; border:none; opacity:0.1;"
-      onload="this.style.opacity='1'"
-    ></iframe>
-  `;
-}
-
-function showLoading(show) {
-  loadingIndicator.style.display = show ? 'block' : 'none';
-  seatmapContainer.style.visibility = show ? 'hidden' : 'visible';
-}
-
-function showError(message) {
-  seatmapContainer.innerHTML = `<div class="error">${message}</div>`;
-}
-
-function getEventIdFromURL() {
-  return new URLSearchParams(window.location.search).get('eventId');
 }

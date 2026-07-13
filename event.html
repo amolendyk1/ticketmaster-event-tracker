@@ -10,43 +10,37 @@
   <header class="tm-header">
     <div class="tm-header-inner">
       <h1 class="tm-logo">Event Explorer</h1>
-      <nav class="tm-nav">
-        <a href="index.html">Back</a>
-      </nav>
     </div>
   </header>
 
-  <main class="tm-main tm-main--detail">
-    <section class="tm-panel tm-panel--detail">
-
-      <div class="tm-detail-header">
-        <h2 id="event-name"></h2>
-        <p id="event-date"></p>
-        <p id="event-venue"></p>
-        <p id="event-location"></p>
-      </div>
-
-      <div class="tm-detail-actions">
-        <a id="ticket-link" class="tm-button tm-button--primary" target="_blank">
-          Buy Tickets
-        </a>
-
-        <button id="open-seatmap" class="tm-button">
-          View Seat Map
-        </button>
-      </div>
-
-    </section>
+  <main class="tm-main">
+    <div class="tm-panel">
+      <h2>Event Details</h2>
+      <div id="event-details">Loading...</div>
+    </div>
   </main>
 
-  <!-- FULL-SCREEN MODAL -->
-  <div id="seatmap-modal" class="tm-modal">
-    <div class="tm-modal-content">
-      <button id="close-seatmap" class="tm-modal-close">Close</button>
-      <iframe id="seatmap-frame"></iframe>
-    </div>
-  </div>
+  <footer class="tm-footer">Powered by Ticketmaster</footer>
 
-  <script src="event.js"></script>
+  <script>
+    async function loadEvent() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      const response = await fetch(`/api/ticketmaster?id=${id}`);
+      const data = await response.json();
+
+      const container = document.getElementById("event-details");
+
+      container.innerHTML = `
+        <h3>${data.name}</h3>
+        <p>${data.dates.start.localDate}</p>
+        <p>${data._embedded?.venues?.[0]?.name || "Unknown venue"}</p>
+        <p>${data.info || ""}</p>
+      `;
+    }
+
+    loadEvent();
+  </script>
 </body>
 </html>

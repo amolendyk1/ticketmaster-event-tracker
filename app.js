@@ -48,7 +48,12 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
   filteredEvents = [];
   shownCount = 0;
 
-  const url = `${API_URL}?keyword=${encodeURIComponent(keyword)}`;
+const url = `${API_URL}?keyword=${encodeURIComponent(
+    keyword
+  )}&category=${encodeURIComponent(
+    categoryFilter
+  )}&city=${encodeURIComponent(locationFilter)}&locale=*`;
+
 
   try {
     const res = await fetch(url);

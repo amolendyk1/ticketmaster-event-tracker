@@ -1,20 +1,29 @@
 export default async function handler(req, res) {
-  const { keyword = "", category = "", id = "" } = req.query;
+  const {
+    keyword = "",
+    category = "",
+    city = "",
+    id = ""
+  } = req.query;
 
   const API_KEY = process.env.TM_KEY;
 
   let url;
 
-  // ⭐ If an event ID is passed → fetch event details
+  // ⭐ Fetch event details
   if (id) {
-    url = `https://app.ticketmaster.com/discovery/v2/events/${id}.json?apikey=${API_KEY}`;
+    url = `https://app.ticketmaster.com/discovery/v2/events/${id}.json?apikey=${API_KEY}&locale=*`;
   }
 
-  // ⭐ Otherwise → search events
+  // ⭐ Search events
   else {
     url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
       keyword
-    )}&classificationName=${encodeURIComponent(category)}&countryCode=US&size=50`;
+    )}&classificationName=${encodeURIComponent(
+      category
+    )}&city=${encodeURIComponent(
+      city
+    )}&countryCode=US&locale=*&size=50`;
   }
 
   try {
