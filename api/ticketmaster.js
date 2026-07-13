@@ -10,18 +10,18 @@ export default async function handler(req, res) {
 
   let url;
 
-  // Fetch event details
+  // ⭐ Fetch event details
   if (id) {
     url = `https://app.ticketmaster.com/discovery/v2/events/${id}.json?apikey=${API_KEY}&locale=*`;
-  } else {
-    // Search events
-    url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
+  }
+
+  // ⭐ Search events
+  else {
+    url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&countryCode=US&keyword=${encodeURIComponent(
       keyword
     )}&classificationName=${encodeURIComponent(
       category
-    )}&city=${encodeURIComponent(
-      city
-    )}&countryCode=US&locale=*&size=50`;
+    )}&city=${encodeURIComponent(city)}&locale=*&size=50`;
   }
 
   console.log("TM URL:", url);
@@ -30,6 +30,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(url);
     const data = await response.json();
+
     res.status(200).json(data);
   } catch (err) {
     console.error("TM ERROR:", err);
