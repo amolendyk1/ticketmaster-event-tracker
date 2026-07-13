@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>Event Explorer</h1>
+    </header>
+
+    <main>
+      <section class="search-panel">
+        <form id="search-form">
+          <input type="text" id="search-input" placeholder="Search events...">
+          <select id="category-select">
+            <option value="">All Categories</option>
+            <option value="Music">Music</option>
+            <option value="Sports">Sports</option>
+          </select>
+          <button type="submit">Search</button>
+        </form>
+        <div id="status"></div>
+      </section>
+
+      <section class="results">
+        <div id="events-container"></div>
+        <button id="load-more" style="display: none;">Load More</button>
+      </section>
+
+      <section class="map-container">
+        <div id="map"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
