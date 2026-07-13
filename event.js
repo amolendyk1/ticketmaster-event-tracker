@@ -12,6 +12,7 @@ async function loadEvent() {
 
     const venue = event._embedded.venues[0];
 
+    // Fill details
     document.getElementById("event-name").textContent = event.name;
     document.getElementById("event-date").textContent =
       event.dates.start.localDate;
@@ -19,9 +20,11 @@ async function loadEvent() {
     document.getElementById("event-location").textContent =
       `${venue.city.name}, ${venue.state?.name || ""}`;
 
+    // Buy Tickets button
     const ticketBtn = document.getElementById("ticket-link");
     ticketBtn.href = event.url;
 
+    // Seat Map modal
     const openBtn = document.getElementById("open-seatmap");
     const closeBtn = document.getElementById("close-seatmap");
     const modal = document.getElementById("seatmap-modal");
@@ -30,15 +33,12 @@ async function loadEvent() {
     openBtn.onclick = () => {
       modal.style.display = "flex";
 
+      // Prefer official seatmap image
       if (event.seatmap?.staticUrl) {
         frame.src = event.seatmap.staticUrl;
       } else {
         frame.src = event.url;
       }
-
-      frame.style.width = "100%";
-      frame.style.height = "100%";
-      frame.style.border = "none";
     };
 
     closeBtn.onclick = () => {
