@@ -1,4 +1,4 @@
-const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
+const API_URL = "https://ticketmaster-event-tracker-fzqer7whw-babson-college.vercel.app/api/ticketmaster";
 
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
@@ -93,7 +93,9 @@ const url = `${API_URL}?keyword=${encodeURIComponent(
       return;
     }
 
-    statusEl.textContent = `Found ${filteredEvents.length} events`;
+      statusEl.textContent = "Error fetching events.";
+    console.error("API ERROR:", err);
+
 
     // Show filter tag
     const parts = [];
