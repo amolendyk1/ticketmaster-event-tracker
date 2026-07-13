@@ -10,11 +10,9 @@ export default async function handler(req, res) {
 
   let url;
 
-  // Fetch event details
   if (id) {
     url = `https://app.ticketmaster.com/discovery/v2/events/${id}.json?apikey=${API_KEY}&locale=*`;
   } else {
-    // Search events
     url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
       keyword
     )}&classificationName=${encodeURIComponent(
@@ -24,6 +22,7 @@ export default async function handler(req, res) {
     )}&countryCode=US&locale=*&size=50`;
   }
 
+  // ⭐ FIXED — log AFTER url is defined
   console.log("TM URL:", url);
 
   try {
