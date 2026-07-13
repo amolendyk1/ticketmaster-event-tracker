@@ -1,4 +1,4 @@
-const API_URL = "https://ticketmaster-event-tracker-fzqer7whw-babson-college.vercel.app/api/ticketmaster";
+const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
 
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
@@ -15,7 +15,7 @@ let shownCount = 0;
 
 let map;
 
-// Initialize map
+// Initialize map after geolocation
 navigator.geolocation.getCurrentPosition(
   (pos) => {
     const userLat = pos.coords.latitude;
@@ -48,11 +48,7 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
   filteredEvents = [];
   shownCount = 0;
 
-  const url = `${API_URL}?keyword=${encodeURIComponent(
-    keyword
-  )}&category=${encodeURIComponent(
-    categoryFilter
-  )}&city=${encodeURIComponent(locationFilter)}&locale=*`;
+  const url = `${API_URL}?keyword=${encodeURIComponent(keyword)}`;
 
   try {
     const res = await fetch(url);
@@ -60,6 +56,7 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
 
     allEvents = data._embedded?.events || [];
 
+    // Apply location + category filters
     filteredEvents = allEvents.filter((event) => {
       const venue = event._embedded.venues[0];
       const city = venue.city.name.toLowerCase();
@@ -93,6 +90,7 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
 
     statusEl.textContent = `Found ${filteredEvents.length} events`;
 
+    // Show filter tag
     const parts = [];
     if (locationFilter) parts.push(`Location: ${locationFilter}`);
     if (categoryFilter) {
@@ -108,7 +106,6 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
     renderMapPins();
   } catch (err) {
     statusEl.textContent = "Error fetching events.";
-    console.error("API ERROR:", err);
   }
 }
 

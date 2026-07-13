@@ -1,40 +1,50 @@
-export async function loadEvents(keyword, category, city) {
-  const url = `/api/ticketmaster?keyword=${encodeURIComponent(
-    keyword
-  )}&category=${encodeURIComponent(
-    category
-  )}&city=${encodeURIComponent(city)}&locale=*`;
+const params = new URLSearchParams(window.location.search);
+const eventId = params.get("id");
 
-  const eventsContainer = document.getElementById("events-list");
-  const statusEl = document.getElementById("events-status");
+const API_URL = "https://ticketmaster-event-tracker.vercel.app/api/ticketmaster";
+
+async function loadEvent() {
+  if (!eventId) return;
 
   try {
-    const response = await fetch(url);
-    const data = await response.json();
+    const res = await fetch(`${API_URL}?id=${eventId}`);
+    const event = await res.json();
 
-    if (!data._embedded || !data._embedded.events) {
-      statusEl.textContent = "No events found.";
-      eventsContainer.innerHTML = "";
-      return;
-    }
+    const venue = event._embedded.venues[0];
 
-    const events = data._embedded.events;
+    document.getElementById("event-name").textContent = event.name;
+    document.getElementById("event-date").textContent =
+      event.dates.start.localDate;
+    document.getElementById("event-venue").textContent = venue.name;
+    document.getElementById("event-location").textContent =
+      `${venue.city.name}, ${venue.state?.name || ""}`;
 
-    statusEl.textContent = `${events.length} events found`;
+    // Buy Tickets button → official Ticketmaster checkout
+    document.getElementById("ticket-link").href = event.url;
 
-    eventsContainer.innerHTML = events
-      .map(
-        (ev) => `
-        <a class="tm-event-card" href="event.html?id=${ev.id}">
-          <h3>${ev.name}</h3>
-          <p>${ev.dates.start.localDate}</p>
-          <p>${ev._embedded?.venues?.[0]?.name || "Unknown venue"}</p>
-        </a>
-      `
-      )
-      .join("");
+    // Full-screen seat map modal using official event page
+    const openBtn = document.getElementById("open-seatmap");
+    const closeBtn = document.getElementById("close-seatmap");
+    const modal = document.getElementById("seatmap-modal");
+    const frame = document.getElementById("seatmap-frame");
+
+    openBtn.onclick = () => {
+      modal.style.display = "flex";
+      frame.style.opacity = "0.1";
+      frame.src = event.url; // official Ticketmaster event page
+      frame.onload = () => {
+        frame.style.opacity = "1";
+      };
+    };
+
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+      frame.src = "";
+    };
   } catch (err) {
-    statusEl.textContent = "Error fetching events.";
-    console.error(err);
+    document.getElementById("event-name").textContent =
+      "Unable to load event details.";
   }
 }
+
+loadEvent();
