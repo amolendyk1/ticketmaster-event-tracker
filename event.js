@@ -12,6 +12,7 @@ async function loadEvent() {
 
     const venue = event._embedded.venues[0];
 
+    // Basic details
     document.getElementById("event-name").textContent = event.name;
     document.getElementById("event-date").textContent =
       event.dates.start.localDate;
@@ -19,10 +20,11 @@ async function loadEvent() {
     document.getElementById("event-location").textContent =
       `${venue.city.name}, ${venue.state?.name || ""}`;
 
-    // Buy Tickets button → official Ticketmaster checkout
-    document.getElementById("ticket-link").href = event.url;
+    // ⭐ BUY TICKETS — official Ticketmaster checkout
+    const ticketBtn = document.getElementById("ticket-link");
+    ticketBtn.href = event.url;   // event.url is ALWAYS the official TM checkout
 
-    // Full-screen seat map modal using official event page
+    // ⭐ SEAT MAP — open full-screen modal
     const openBtn = document.getElementById("open-seatmap");
     const closeBtn = document.getElementById("close-seatmap");
     const modal = document.getElementById("seatmap-modal");
@@ -30,17 +32,21 @@ async function loadEvent() {
 
     openBtn.onclick = () => {
       modal.style.display = "flex";
-      frame.style.opacity = "0.1";
-      frame.src = event.url; // official Ticketmaster event page
-      frame.onload = () => {
-        frame.style.opacity = "1";
-      };
+
+      // ⭐ Use Ticketmaster's official seat map URL if available
+      if (event.seatmap?.staticUrl) {
+        frame.src = event.seatmap.staticUrl;
+      } else {
+        // fallback: official event page
+        frame.src = event.url;
+      }
     };
 
     closeBtn.onclick = () => {
       modal.style.display = "none";
-      frame.src = "";
+      frame.src = ""; // clear iframe
     };
+
   } catch (err) {
     document.getElementById("event-name").textContent =
       "Unable to load event details.";
@@ -48,3 +54,4 @@ async function loadEvent() {
 }
 
 loadEvent();
+
