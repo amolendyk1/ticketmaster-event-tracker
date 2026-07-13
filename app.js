@@ -15,7 +15,6 @@ let shownCount = 0;
 
 let map;
 
-// Initialize map after geolocation
 navigator.geolocation.getCurrentPosition(
   (pos) => {
     const userLat = pos.coords.latitude;
@@ -56,7 +55,6 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
 
     allEvents = data._embedded?.events || [];
 
-    // Apply location + category filters
     filteredEvents = allEvents.filter((event) => {
       const venue = event._embedded.venues[0];
       const city = venue.city.name.toLowerCase();
@@ -90,7 +88,6 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
 
     statusEl.textContent = `Found ${filteredEvents.length} events`;
 
-    // Show filter tag
     const parts = [];
     if (locationFilter) parts.push(`Location: ${locationFilter}`);
     if (categoryFilter) {
