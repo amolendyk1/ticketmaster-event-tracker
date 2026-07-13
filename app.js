@@ -107,7 +107,7 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
 }
 
 function renderEvents() {
-  const nextEvents = filteredEvents.slice(shownCount, shownCount + 5);
+  const nextEvents = filteredEvents.slice(shownCount, shownCount + 6);
   shownCount += nextEvents.length;
 
   nextEvents.forEach((event) => {
