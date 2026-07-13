@@ -8,6 +8,8 @@ export default async function handler(req, res) {
 
   const API_KEY = process.env.TM_KEY;
 
+  console.log("TM URL:", url);
+
   let url;
 
   // ⭐ Fetch event details
