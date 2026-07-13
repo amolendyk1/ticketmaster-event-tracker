@@ -12,7 +12,6 @@ export async function loadEvents(keyword, category, city) {
     const response = await fetch(url);
     const data = await response.json();
 
-    // ⭐ No events found
     if (!data._embedded || !data._embedded.events) {
       statusEl.textContent = "No events found.";
       eventsContainer.innerHTML = "";

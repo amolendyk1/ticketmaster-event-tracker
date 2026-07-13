@@ -8,17 +8,13 @@ export default async function handler(req, res) {
 
   const API_KEY = process.env.TM_KEY;
 
-  console.log("TM URL:", url);
-
   let url;
 
-  // ⭐ Fetch event details
+  // Fetch event details
   if (id) {
     url = `https://app.ticketmaster.com/discovery/v2/events/${id}.json?apikey=${API_KEY}&locale=*`;
-  }
-
-  // ⭐ Search events
-  else {
+  } else {
+    // Search events
     url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${API_KEY}&keyword=${encodeURIComponent(
       keyword
     )}&classificationName=${encodeURIComponent(
@@ -28,16 +24,17 @@ export default async function handler(req, res) {
     )}&countryCode=US&locale=*&size=50`;
   }
 
+  console.log("TM URL:", url);
+
   try {
     const response = await fetch(url);
     const data = await response.json();
-
     res.status(200).json(data);
-} catch (err) {
-  console.error("TM ERROR:", err);
-  res.status(500).json({
-    error: "Ticketmaster API error",
-    details: err.toString(),
-  });
-}
+  } catch (err) {
+    console.error("TM ERROR:", err);
+    res.status(500).json({
+      error: "Ticketmaster API error",
+      details: err.toString(),
+    });
+  }
 }

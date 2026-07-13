@@ -48,12 +48,11 @@ async function fetchEvents(keyword, locationFilter, categoryFilter) {
   filteredEvents = [];
   shownCount = 0;
 
-const url = `${API_URL}?keyword=${encodeURIComponent(
+  const url = `${API_URL}?keyword=${encodeURIComponent(
     keyword
   )}&category=${encodeURIComponent(
     categoryFilter
   )}&city=${encodeURIComponent(locationFilter)}&locale=*`;
-
 
   try {
     const res = await fetch(url);
@@ -93,11 +92,8 @@ const url = `${API_URL}?keyword=${encodeURIComponent(
       return;
     }
 
-      statusEl.textContent = "Error fetching events.";
-    console.error("API ERROR:", err);
+    statusEl.textContent = `Found ${filteredEvents.length} events`;
 
-
-    // Show filter tag
     const parts = [];
     if (locationFilter) parts.push(`Location: ${locationFilter}`);
     if (categoryFilter) {
@@ -113,6 +109,7 @@ const url = `${API_URL}?keyword=${encodeURIComponent(
     renderMapPins();
   } catch (err) {
     statusEl.textContent = "Error fetching events.";
+    console.error("API ERROR:", err);
   }
 }
 
