@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>Event Details</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
+<body class="tm-body">
+  <!-- HEADER -->
+  <header class="tm-header">
+    <div class="tm-header-inner">
+      <h1 class="tm-logo">Event Explorer</h1>
 
-<header class="tm-header">
-  <div class="tm-header-inner">
-    <h1 class="tm-logo">Event Explorer</h1>
-    <nav class="tm-nav">
-      <a href="index.html" class="tm-nav-link">Back</a>
-    </nav>
-  </div>
-</header>
+      <nav class="tm-nav">
+        <a href="index.html" class="tm-nav-link">Back</a>
+      </nav>
+    </div>
+  </header>
 
-
+  <!-- MAIN -->
   <main class="tm-main tm-main--detail">
-    <section class="tm-panel tm-panel--detail">
 
+    <section class="tm-panel tm-panel--detail">
       <div class="tm-detail-header">
         <h2 id="event-name"></h2>
         <p id="event-date"></p>
@@ -36,10 +39,11 @@
           View Seat Map
         </button>
       </div>
-
     </section>
+
   </main>
 
+  <!-- SEAT MAP MODAL -->
   <div id="seatmap-modal" class="tm-modal">
     <div class="tm-modal-content">
       <button id="close-seatmap" class="tm-modal-close">Close</button>
@@ -47,6 +51,7 @@
     </div>
   </div>
 
+  <!-- FOOTER (now always at bottom) -->
   <footer class="tm-footer">
     Powered by Ticketmaster • Event Explorer © 2026
   </footer>
